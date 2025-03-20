@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-//renklere çok uğraşamadım siz ayarlarsınız
+import 'package:lingocore/home_page.dart';
+// UI elemanları birbirinden çok uzak
+// Etraftaki paddingler çok az
+// Google logosu eklenebilir X
+// Kayıtlı kullanıcı değil misin? biraz daha yukarıda olabilir X
 class LoginPage extends StatelessWidget{
   const LoginPage({super.key});
 
@@ -14,7 +18,7 @@ class LoginPage extends StatelessWidget{
               Icons.account_circle_outlined,
               size: 100,
             ),
-            SizedBox(height: 75,),
+            spacing(50),
             Text(
               "Giriş Ekranı",
               style: TextStyle(
@@ -22,7 +26,7 @@ class LoginPage extends StatelessWidget{
                 fontSize: 20,
               ),
             ),
-            SizedBox(height: 100,),
+            spacing(100),
             
             Text(
               "Google ile giriş yap",
@@ -31,30 +35,40 @@ class LoginPage extends StatelessWidget{
                 fontSize: 16,
               ),
             ),
-            SizedBox(height: 20,),
-            Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white),
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.grey[350]
-              ),
-              child: Icon(Icons.add_sharp)
+            spacing(20),
+            //Inkwell efekti tam çalışmıyor
+            Material(
+              borderRadius: BorderRadius.circular(10),
+              //Iconbutonla yap
+              color: Colors.grey[350],
+              child: 
+                  InkWell(
+                    onTap: (){
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomePage())
+                      );
+                    },
+                  borderRadius: BorderRadius.circular(5),
+                  child: 
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: Image.asset(
+                      "assets/images/google.png",
+                      width: 50,
+                    ),
+                  ),
+                ),
             ),
-            SizedBox(height: 100,),
+            spacing(100),
             Spacer(),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  Expanded(
-                    child: Divider(
-                      thickness: 0.5,
-                      color: Colors.grey[600],
-                      )
-                  ),
+                  blackDivider(),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
                       "Kayıtlı kullanıcı değil misin?",
                       style: TextStyle(
@@ -63,16 +77,11 @@ class LoginPage extends StatelessWidget{
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: Divider(
-                      thickness: 0.5,
-                      color: Colors.grey[600],
-                      )
-                  ),
+                  blackDivider(),
                 ],
               ),
             ),
-            SizedBox(height: 20,),
+            spacing(20),
             Text(
               "Kayıt ol",
               style: TextStyle(
@@ -80,10 +89,21 @@ class LoginPage extends StatelessWidget{
                 fontSize: 16
               ),
             ),
-            SizedBox(height: 50,)
+            spacing(75)
           ],
         ),
       ),
     );
+  }
+
+SizedBox spacing(double size) => SizedBox(height: size,);
+
+Expanded blackDivider() {
+    return Expanded(
+                  child: Divider(
+                    thickness: 0.5,
+                    color: Colors.grey[600],
+                    )
+                );
   }
 }
