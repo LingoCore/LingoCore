@@ -9,16 +9,21 @@ class LoginPage extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+
+    //ekran yükekliğini al ve belli bi orana dönüştür
+    double screenHeight = MediaQuery.of(context).size.height;
+    double paddingLarge = screenHeight * 0.25;
+
     return Scaffold(
       
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.account_circle_outlined,
               size: 100,
-            ),
-            spacing(50),
+            ),      
             Text(
               "Giriş Ekranı",
               style: TextStyle(
@@ -26,62 +31,53 @@ class LoginPage extends StatelessWidget{
                 fontSize: 20,
               ),
             ),
-            spacing(100),
-            
-            Text(
-              "Google ile giriş yap",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
+            Padding(
+              padding: EdgeInsets.all(paddingLarge),
+              child: Material(
+                color: Colors.grey[300],
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                child: InkWell(
+                  splashFactory: InkRipple.splashFactory,
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: () => Navigator.pushReplacement(
+                    context, MaterialPageRoute(
+                      builder: (context) => HomePage()
+                    )
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset("assets/images/google.png", height: 50,),
+                      SizedBox(width: 15,),
+                      Text(
+                        "Google ile giriş yap",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black
+                        ),
+                      )
+                    ],
+                  ),
+                ),
               ),
             ),
-            spacing(20),
-            //Inkwell efekti tam çalışmıyor
-            Material(
-              borderRadius: BorderRadius.circular(10),
-              //Iconbutonla yap
-              color: Colors.grey[350],
-              child: 
-                  InkWell(
-                    onTap: (){
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomePage())
-                      );
-                    },
-                  borderRadius: BorderRadius.circular(5),
-                  child: 
-                  Container(
-                    padding: EdgeInsets.all(20),
-                    child: Image.asset(
-                      "assets/images/google.png",
-                      width: 50,
+            Row(
+              children: [
+                blackDivider(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    "Kayıtlı kullanıcı değil misin?",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
                     ),
                   ),
                 ),
+                blackDivider(),
+              ],
             ),
-            spacing(100),
-            Spacer(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  blackDivider(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      "Kayıtlı kullanıcı değil misin?",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  blackDivider(),
-                ],
-              ),
-            ),
-            spacing(20),
             Text(
               "Kayıt ol",
               style: TextStyle(
@@ -89,15 +85,13 @@ class LoginPage extends StatelessWidget{
                 fontSize: 16
               ),
             ),
-            spacing(75)
           ],
         ),
       ),
     );
   }
 
-SizedBox spacing(double size) => SizedBox(height: size,);
-
+//siyah ayraç
 Expanded blackDivider() {
     return Expanded(
                   child: Divider(
