@@ -1,0 +1,22 @@
+{
+  "name": "lingocore",
+  "scripts": {
+    "full": "concurrently -k \"npm run server\" \"npm run flutter\"",
+    "server": "nodemon server/index.js",
+    "flutter": "cd lingocore && flutter run",
+    "start": "node server/index.js",
+    "flutter:build": "cd lingocore && flutter build",
+    "server:prod": "node server/index.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "google-auth-library": "^9.15.1"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.2"
+  }
+}
