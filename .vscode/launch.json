@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Node.js Server",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "nodemon",
+      "program": "${workspaceFolder}/server/index.js",
+      "restart": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Flutter App",
+      "type": "dart",
+      "request": "launch",
+      "program": "${workspaceFolder}/lingocore/lib/main.dart"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Run Full Stack (Node + Flutter)",
+      "configurations": ["Node.js Server", "Flutter App"]
+    }
+  ]
+}
