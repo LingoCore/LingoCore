@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lingocore/widgets/questions.dart';
 
 Color backgroundColor = Colors.white;
 
@@ -33,84 +34,12 @@ class QuestionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (question.type) {
       case 'true_false':
-        return buildTrueFalse();
+        return TrueFalseQuestion(question: question,callback: checkAns,);
       case 'multiple_choice':
-        return buildMultipleChoice();
+        return MultipleChoiceQuestion(question: question, callback: checkAns,);
       default:
-        return const Text('bilinmeyen soru tipi');
+        return ErrorWidget("bilinmeyen soru tipi!");
     }
-  }
-
-  Widget buildQuestionText(String text) {
-    return Text(question.questionText, style: const TextStyle(fontSize: 30));
-  }
-
-  // Generate button
-  Widget buildAnswerButton(String label, VoidCallback onPressed) {
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.greenAccent, Colors.white],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            padding: EdgeInsets.symmetric(vertical: 30, horizontal: 50),
-            elevation: 0,
-            shadowColor: Colors.transparent,
-            backgroundColor: Colors.transparent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: BorderSide(color: Colors.green, width: 3),
-            ),
-          ),
-          onPressed: onPressed,
-          child: Text(label, style: TextStyle(fontSize: 30)),
-        ),
-      ),
-    );
-  }
-
-  // True/False Questions
-  Widget buildTrueFalse() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(100.0),
-          child: buildQuestionText(question.questionText)
-        ),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            buildAnswerButton('Doğru', () => checkAns('Şık 1')),
-            buildAnswerButton('Yanlış', () => checkAns('Yanlış')),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget buildMultipleChoice() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(50.0),
-          child: Text(
-            question.questionText,
-            style: const TextStyle(fontSize: 30),
-          ),
-        ),
-        ...(question.options ?? []).map(
-          (option) => buildAnswerButton(option, () => checkAns(option)),
-        ),
-      ],
-    );
   }
 }
 
@@ -129,20 +58,22 @@ class _LessonPagesState extends State<LessonPages> {
   final Question question = Question(
     type: 'multiple_choice',
     questionText: 'Soru açıklaması',
-    options: ['Şık 1', 'Şık 2', 'Şık 2'],
+    options: ['evet', 'hayır', 'eveettt', 'hhhh']
   );
 
   String correctAns = 'Şık 1';
 
   void check(String isCorrect) {
-    if (currentQuestion <= totalQuestions) {
-      if (isCorrect == correctAns) {
-        score++;
-      }
+    if (isCorrect == correctAns) {
       setState(() {
-        currentQuestion++;
+        score++;
       });
     }
+
+    setState(() {
+      currentQuestion++;
+    });
+
     if (currentQuestion > totalQuestions) {
       Navigator.push(
         context,
@@ -181,7 +112,6 @@ class _LessonPagesState extends State<LessonPages> {
   }
 }
 
-
 class LessonEnd extends StatelessWidget {
   final int score, totalQ;
   const LessonEnd({required this.score, required this.totalQ});
@@ -200,16 +130,16 @@ class LessonEnd extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 value: score / totalQ,
                 minHeight: 20,
-                backgroundColor:  const Color.fromARGB(255, 195, 206, 215),
+                backgroundColor: const Color.fromARGB(255, 195, 206, 215),
                 color: Colors.blue,
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 25),
-              child: Text("$score / $totalQ", style: TextStyle(
-                fontSize: 20,
-                color: Colors.black
-              ),),
+              child: Text(
+                "$score / $totalQ",
+                style: TextStyle(fontSize: 20, color: Colors.black),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(10, 20, 10, 100),
@@ -224,7 +154,7 @@ class LessonEnd extends StatelessWidget {
                     context,
                     MaterialPageRoute(builder: (context) => LessonPages()),
                   ),
-              child: Text("Geri dön", style: TextStyle(fontSize: 20),),
+              child: Text("Geri dön", style: TextStyle(fontSize: 20)),
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
                 backgroundColor: const Color.fromARGB(255, 157, 233, 160),
