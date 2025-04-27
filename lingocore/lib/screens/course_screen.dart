@@ -23,56 +23,68 @@ class _CourseScreenState extends State<CourseScreen> {
 
           final lessonTitle = lessons[index];
           final lessonsDescription = lessonDescription[index];
+          const double maxContentWidth = 600.0; // to prevents content from becoming excessively fragmented on very wide screens.
 
-          return Container(
-            // width: 300,
-            // height: 100,
-            padding: EdgeInsets.all(50),
-            margin: EdgeInsets.all(100),
-            alignment: Alignment.center, // to center the text
-            decoration: BoxDecoration( // to customize the container
-              color: Colors.blueGrey,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(width: 4, color: Colors.black26), // frame
-              gradient: LinearGradient( // renk geçişli görünüm sağlar.
-                colors: [Colors.blue, Colors.white], 
-                begin: Alignment.topLeft, 
-                end: Alignment.bottomRight,
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Center(
+              child: ConstrainedBox( // sets a maximum width limit on the content.
+                constraints: const BoxConstraints( 
+                  maxWidth: maxContentWidth),
+                child: Container(
+                  padding: EdgeInsets.all(16.0),
+                  decoration: BoxDecoration( // to customize the container
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(width: 4, color: Colors.black26), // frame
+                    gradient: LinearGradient(  // provides a color transition appearance.
+                      colors: [Colors.blue, Colors.white], 
+                      begin: Alignment.topLeft, 
+                      end: Alignment.bottomRight,
+                      ),
+                
+                    // to shade
+                    boxShadow: [ 
+                      BoxShadow(
+                      color: Colors.grey.shade200,
+                      blurRadius: 8, // to highlight the color (blur value)
+                      spreadRadius: 2, // to spread the color more (spread value)
+                      offset: Offset(0,3), // gives an effect as if the sun hit from above.
+                      ),
+                    ] 
+                  ),
+                  child: ListTile(
+                    leading: ClipOval(
+                      child: Container(
+                        width: 40.0, // A value close to the default diameter of the CircleAvatar (radius=20)
+                        height: 40.0, // Width and height must be the same to make it a circle
+                        color: Colors.blueAccent, 
+                        alignment: Alignment.center, 
+                        child: Text(
+                          '${index + 1}',
+                          style: TextStyle(
+                            color: Colors.white, 
+                          ),
+                        ),
+                      ),
+                    ),
+                
+                    title: Text(lessonTitle),
+                    subtitle: Text(lessonsDescription),
+                    trailing: Icon(Icons.arrow_forward_ios),
+                
+                    onTap: () {
+                      Navigator.push(
+                        context, 
+                        MaterialPageRoute(
+                          builder: (context) => LessonDetailPage(lessonTitle: lessonTitle),
+                        )
+                      );
+                    },
+                  ),
                 ),
-    
-              boxShadow: [ // Gölgelendirmek için
-                BoxShadow(
-                color: Colors.grey.shade200,
-                blurRadius: 6, // rengi belirginleştirmek için (bulanıklık değeri)
-                spreadRadius: 1, // rengi daha fazla yaymak için (yayılma değeri)
-                offset: Offset(0,2), // üstten güneş vurmuş gibi bir efekt bırakıyor
-                ),
-              ] 
-            ),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: Colors.blueAccent,
-                foregroundColor: Colors.white,
-                child: Text('${index + 1}'),
               ),
-
-              title: Text(lessonTitle),
-              subtitle: Text(lessonsDescription),
-              trailing: Icon(Icons.arrow_forward_ios),
-
-              onTap: () {
-                Navigator.push(
-                  context, 
-                  MaterialPageRoute(
-                    builder: (context) => LessonDetailPage(lessonTitle: lessonTitle),
-                  )
-                );
-              },
             ),
           );
-            
-
-          
         }
       ),
     );
