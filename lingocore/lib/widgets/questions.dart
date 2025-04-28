@@ -5,7 +5,7 @@ import 'package:lingocore/widgets/common_widgets.dart';
 class TrueFalseQuestion extends StatelessWidget {
   final Question question;
   final Function(String) callback;
-  TrueFalseQuestion({super.key, required this.question, required this.callback});
+  const TrueFalseQuestion({super.key, required this.question, required this.callback});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class TrueFalseQuestion extends StatelessWidget {
 class MultipleChoiceQuestion extends StatelessWidget {
   final Question question;
   final Function(String) callback;
-  MultipleChoiceQuestion({super.key, required this.question, required this.callback});
+  const MultipleChoiceQuestion({super.key, required this.question, required this.callback});
 
   @override
   Widget build(BuildContext context) {

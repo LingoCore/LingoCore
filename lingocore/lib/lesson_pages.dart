@@ -34,9 +34,9 @@ class QuestionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (question.type) {
       case 'true_false':
-        return TrueFalseQuestion(question: question,callback: checkAns,);
+        return TrueFalseQuestion(question: question, callback: checkAns);
       case 'multiple_choice':
-        return MultipleChoiceQuestion(question: question, callback: checkAns,);
+        return MultipleChoiceQuestion(question: question, callback: checkAns);
       default:
         return ErrorWidget("bilinmeyen soru tipi!");
     }
@@ -58,7 +58,7 @@ class _LessonPagesState extends State<LessonPages> {
   final Question question = Question(
     type: 'multiple_choice',
     questionText: 'Soru açıklaması',
-    options: ['evet', 'hayır', 'eveettt', 'hhhh']
+    options: ['evet', 'hayır', 'eveettt', 'hhhh'],
   );
 
   String correctAns = 'Şık 1';
@@ -78,7 +78,7 @@ class _LessonPagesState extends State<LessonPages> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => LessonEnd(score: score, totalQ: totalQuestions),
+          builder: (context) => LessonEnd(score: score, totalQ: totalQuestions, currentQ: currentQuestion,),
         ),
       );
     }
@@ -96,12 +96,21 @@ class _LessonPagesState extends State<LessonPages> {
                 horizontal: 20.0,
                 vertical: 50,
               ),
-              child: LinearProgressIndicator(
-                value: score / totalQuestions,
-                backgroundColor: const Color.fromARGB(255, 195, 206, 215),
-                color: Colors.blue,
-                minHeight: 20,
-                borderRadius: BorderRadius.circular(10),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween<double>(
+                  begin: 0.0,
+                  end: (currentQuestion - 1) / totalQuestions,
+                ),
+                duration: const Duration(milliseconds: 150),
+                builder: (context, value, child) {
+                  return LinearProgressIndicator(
+                    value: value,
+                    backgroundColor: const Color.fromARGB(255, 195, 206, 215),
+                    color: Colors.blue,
+                    minHeight: 20,
+                    borderRadius: BorderRadius.circular(10),
+                  );
+                },
               ),
             ),
             QuestionWidget(question: question, checkAns: check),
@@ -113,8 +122,8 @@ class _LessonPagesState extends State<LessonPages> {
 }
 
 class LessonEnd extends StatelessWidget {
-  final int score, totalQ;
-  const LessonEnd({required this.score, required this.totalQ});
+  final int score, totalQ, currentQ;
+  const LessonEnd({super.key, required this.score, required this.totalQ, required this.currentQ});
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +137,7 @@ class LessonEnd extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(10, 20, 10, 100),
               child: LinearProgressIndicator(
                 borderRadius: BorderRadius.circular(10),
-                value: score / totalQ,
+                value: currentQ - 1 / totalQ,
                 minHeight: 20,
                 backgroundColor: const Color.fromARGB(255, 195, 206, 215),
                 color: Colors.blue,
@@ -154,13 +163,13 @@ class LessonEnd extends StatelessWidget {
                     context,
                     MaterialPageRoute(builder: (context) => LessonPages()),
                   ),
-              child: Text("Geri dön", style: TextStyle(fontSize: 20)),
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
                 backgroundColor: const Color.fromARGB(255, 157, 233, 160),
                 foregroundColor: Colors.black,
                 elevation: 0,
               ),
+              child: Text("Geri dön", style: TextStyle(fontSize: 20)),
             ),
           ],
         ),
