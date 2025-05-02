@@ -1,0 +1,125 @@
+import 'package:flutter/material.dart';
+
+class CourseScreen extends StatefulWidget {
+  const CourseScreen({super.key});
+
+  @override
+  State<CourseScreen> createState() => _CourseScreenState();
+}
+
+class _CourseScreenState extends State<CourseScreen> {
+  
+  final List<String> lessons = List.generate(20, (index) => 'Ders ${index + 1}');
+  final List<String> lessonDescription = List.generate(20, (index) => 'Bu ${index + 1}. dersin içeriğidir.');
+  
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // to prevent the application from slowing down as the number of lessons increases.
+      body: ListView.builder(
+        itemCount: lessons.length,
+        itemBuilder: (context, index) {
+
+          final lessonTitle = lessons[index];
+          final lessonsDescription = lessonDescription[index];
+          const double maxContentWidth = 600.0; // to prevents content from becoming excessively fragmented on very wide screens.
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Center(
+              child: InkWell(
+                // to make sure the Ripple effect to appear properly.
+                borderRadius: BorderRadius.circular(20), 
+                onTap: () {
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(
+                      builder: (context) => LessonDetailPage(lessonTitle: lessonTitle),
+                    )
+                  );
+                },
+                child: ConstrainedBox( // sets a maximum width limit on the content.
+                  constraints: const BoxConstraints( 
+                    maxWidth: maxContentWidth),
+                  child: Container(
+                    padding: EdgeInsets.all(16.0),
+                    decoration: BoxDecoration( // to customize the container
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(width: 4, color: Colors.black26), // frame
+                      gradient: LinearGradient(  // provides a color transition appearance.
+                        colors: [Colors.blue, Colors.white], 
+                        begin: Alignment.topLeft, 
+                        end: Alignment.bottomRight,
+                        ),
+                  
+                      // to shade
+                      boxShadow: [ 
+                        BoxShadow(
+                        color: Colors.grey.shade500,
+                        blurRadius: 8, // to highlight the color (blur value)
+                        spreadRadius: 2, // to spread the color more (spread value)
+                        offset: Offset(0,3), // gives an effect as if the sun hit from above.
+                        ),
+                      ] 
+                    ),
+                    child: ListTile(
+                      // This parameter was added because the ListTile widget overrides the clickable hand icon in the container.
+                      mouseCursor: SystemMouseCursors.click, 
+                      leading: ClipOval(
+                        child: Container(
+                          width: 40.0, // A value close to the default diameter of the CircleAvatar (radius=20)
+                          height: 40.0, // Width and height must be the same to make it a circle
+                          color: Colors.blueAccent, 
+                          alignment: Alignment.center, 
+                          child: Text(
+                            '${index + 1}',
+                            style: TextStyle(
+                              color: Colors.white, 
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      title: Text(lessonTitle),
+                      subtitle: Text(lessonsDescription),
+                      trailing: Icon(Icons.arrow_forward_ios),
+                      
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+      ),
+    );
+  }
+}
+
+
+class LessonDetailPage extends StatelessWidget {
+  
+  // lesson title from previous page
+  final String lessonTitle; 
+
+  // Constructor: Requires the course title to be retrieved when creating this page
+  const LessonDetailPage({Key? key, required this.lessonTitle}) : super(key: key);
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(lessonTitle),
+      ),
+      body: Center(
+
+        child: Text(
+          'Bu sayfa "$lessonTitle" içeriğini gösterecektir.\n\nBuraya video, metin, alıştırmalar vb. ekleyebilirsiniz.',
+          style: TextStyle(fontSize: 19.0),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+}

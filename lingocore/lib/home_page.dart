@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lingocore/screens/course_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -43,15 +44,7 @@ class _HomePage extends State<HomePage> {
               ),
             ),
           ),
-          Container(
-            color: Colors.green[50],
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [Text("DERSLER"), Icon(Icons.auto_awesome_outlined)],
-              ),
-            ),
-          ),
+          CourseScreen(),
           Container(
             color: Colors.blue[50],
             child: Center(
