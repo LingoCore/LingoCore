@@ -1,57 +1,126 @@
 import 'package:flutter/material.dart';
 import 'package:lingocore/lesson_pages.dart';
-import 'package:lingocore/widgets/common_widgets.dart';
+import 'common_question_button.dart';
 
 class TrueFalseQuestion extends StatelessWidget {
   final Question question;
   final Function(String) callback;
-  const TrueFalseQuestion({super.key, required this.question, required this.callback});
+
+  const TrueFalseQuestion({
+    super.key,
+    required this.question,
+    required this.callback,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(100.0),
-          child: Text(question.questionText),
-        ),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ButtonWidget(text: 'Doğru', buttonFunction: () => callback('Şık 1')),
-            ButtonWidget(text: 'Yanlış', buttonFunction: () => callback('Yanlış')),
-          ],
-        ),
-      ],
-    );
+    return Column();
   }
 }
 
-class MultipleChoiceQuestion extends StatelessWidget {
+class MultipleChoiceQuestion extends StatefulWidget {
   final Question question;
   final Function(String) callback;
-  const MultipleChoiceQuestion({super.key, required this.question, required this.callback});
+  final List<String> answerList;
+  final List<String> correctAnswer;
+  final bool isPressAllowed;
+
+  const MultipleChoiceQuestion({
+    super.key,
+    required this.question,
+    required this.callback,
+    required this.answerList,
+    required this.isPressAllowed,
+    required this.correctAnswer,
+  });
 
   @override
+  MultipleChoiceQuestionState createState() => MultipleChoiceQuestionState();
+}
+
+class MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(50.0),
-          child: Text(question.questionText),
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Function to determine the button color based on the answer
+    Color getButtonColor(String option) {
+      if (!widget.answerList.contains(option)) return Colors.blueAccent;
+
+      if (!widget.isPressAllowed) {
+        final index = widget.answerList.indexOf(option);
+        final isCorrect =
+            index < widget.correctAnswer.length &&
+            option == widget.correctAnswer[index];
+        return isCorrect ? Colors.green : Colors.red;
+      }
+
+      return Colors.blue[200]!;
+    }
+
+    return Center(
+      child: SizedBox(
+        height: screenHeight * 0.8,
+        width: screenWidth * 0.8,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: screenHeight * 0.03),
+              child: Center(
+                child: Text(
+                  widget.question.questionText,
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.black, width: 3),
+              ),
+              height: screenHeight * 0.1,
+              width: screenWidth * 0.8,
+              child: Center(
+                child: Text(
+                  widget.answerList.join('  '),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: screenHeight * 0.2,
+              width: screenWidth * 0.8,
+              child: Align(
+                alignment: Alignment.center,
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 2,
+                  runSpacing: 1,
+                  children:
+                      widget.question.options!.map((option) {
+                        //To generate buttons
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 1,
+                            horizontal: 1,
+                          ),
+                          child: CommonButton(
+                            text: option,
+                            onPressed: () => widget.callback(option),
+                            backgroundColor: getButtonColor(option),
+
+                            isEnabled: widget.isPressAllowed,
+                          ),
+                        );
+                      }).toList(),
+                ),
+              ),
+            ),
+          ],
         ),
-        Column(
-          children:
-              question.options
-                  ?.map(
-                    (option) =>
-                        ButtonWidget(text: option, buttonFunction: () => callback(option)),
-                  )
-                  .toList() ??
-              [],
-        ),
-      ],
+      ),
     );
   }
 }

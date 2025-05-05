@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lingocore/widgets/questions.dart';
-
-Color backgroundColor = Colors.white;
+import 'package:lingocore/widgets/common_question_button.dart';
 
 //Question data
 class Question {
@@ -21,25 +20,27 @@ class Question {
   }
 }
 
-class QuestionWidget extends StatelessWidget {
-  final Question question;
-  final Function(String userAns) checkAns;
-  const QuestionWidget({
-    super.key,
-    required this.question,
-    required this.checkAns,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    switch (question.type) {
-      case 'true_false':
-        return TrueFalseQuestion(question: question, callback: checkAns);
-      case 'multiple_choice':
-        return MultipleChoiceQuestion(question: question, callback: checkAns);
-      default:
-        return ErrorWidget("bilinmeyen soru tipi!");
-    }
+// Function to create a question widget based on the type
+Widget questionWidget({
+  required Question question,
+  required Function(String) callback,
+  required List<String> answerList,
+  required bool isPressAllowed,
+  required List<String> correctAnswer,
+}) {
+  switch (question.type) {
+    case 'true_false':
+      return TrueFalseQuestion(question: question, callback: callback);
+    case 'multiple_choice':
+      return MultipleChoiceQuestion(
+        question: question,
+        callback: callback,
+        answerList: answerList,
+        isPressAllowed: isPressAllowed,
+        correctAnswer: correctAnswer,
+      );
+    default:
+      return ErrorWidget("Bilinmeyen soru tipi!");
   }
 }
 
@@ -54,67 +55,134 @@ class _LessonPagesState extends State<LessonPages> {
   int currentQuestion = 1;
   int score = 0;
   int totalQuestions = 5;
+  List<String> answerList = [];
+  bool isQuestionAnswered = false; // Variable to check if question is answered
 
   final Question question = Question(
     type: 'multiple_choice',
-    questionText: 'Soru açıklaması',
-    options: ['evet', 'hayır', 'eveettt', 'hhhh'],
+    questionText: 'Question Text',
+    options: ['I', 'He', 'She', 'Are', 'Computer', 'Am', 'Engineer', 'It'],
   );
 
-  String correctAns = 'Şık 1';
+  List<String> correctAnswer = ['I', 'Am', 'Engineer'];
 
-  void check(String isCorrect) {
-    if (isCorrect == correctAns) {
-      setState(() {
-        score++;
-      });
-    }
-
+  // Function to check if the answer was already selected
+  void toggleAnswerButtons(String answer) {
     setState(() {
-      currentQuestion++;
+      if (answerList.contains(answer)) {
+        answerList.remove(answer);
+      } else {
+        answerList.add(answer);
+      }
     });
+  }
 
-    if (currentQuestion > totalQuestions) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LessonEnd(score: score, totalQ: totalQuestions, currentQ: currentQuestion,),
-        ),
-      );
+  // Function to check if the answer is correct
+  bool checkAnswer() {
+  if (answerList.length != correctAnswer.length) return false;
+  for (int i = 0; i < answerList.length; i++) {
+    if (answerList[i] != correctAnswer[i]) return false;
+  }
+  return true;
+}
+
+  // Function to restart the lesson
+  void restart() {
+    setState(() {
+      score = 0;
+    });
+  }
+
+  // Function to switch between the answer and continue button
+  void toggleContinueButton() {
+    if (isQuestionAnswered) {
+      setState(() {
+        isQuestionAnswered = false;
+        currentQuestion++;
+        answerList.clear();
+      });
+      if (currentQuestion > totalQuestions) {
+        setState(() {
+          currentQuestion = 1;
+        });
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => LessonEnd(
+                  score: score,
+                  totalQ: totalQuestions,
+                  currentQ: currentQuestion,
+                  onRestart: restart,
+                ),
+          ),
+        );
+      }
+    } else {
+      setState(() {
+        isQuestionAnswered = true;
+        if (checkAnswer()) {
+          score++;
+        }
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20.0,
-                vertical: 50,
-              ),
-              child: TweenAnimationBuilder<double>(
+        child: SizedBox(
+          width: screenWidth * 0.95,
+          height: screenHeight * 0.95,
+          child: Column(
+            children: [
+              TweenAnimationBuilder<double>(
                 tween: Tween<double>(
                   begin: 0.0,
                   end: (currentQuestion - 1) / totalQuestions,
                 ),
                 duration: const Duration(milliseconds: 150),
                 builder: (context, value, child) {
-                  return LinearProgressIndicator(
-                    value: value,
-                    backgroundColor: const Color.fromARGB(255, 195, 206, 215),
-                    color: Colors.blue,
-                    minHeight: 20,
+                  return ClipRRect(
                     borderRadius: BorderRadius.circular(10),
+                    child: LinearProgressIndicator(
+                      value: value,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Colors.blue,
+                      minHeight: 15,
+                    ),
                   );
                 },
               ),
-            ),
-            QuestionWidget(question: question, checkAns: check),
-          ],
+              questionWidget(
+                question: question,
+                callback: toggleAnswerButtons,
+                answerList: answerList,
+                isPressAllowed: !isQuestionAnswered,
+                correctAnswer: correctAnswer,
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  child: CommonButton(
+                    text: isQuestionAnswered ? "devam et" : "cevapla",
+                    onPressed: () => toggleContinueButton(),
+                    backgroundColor:
+                        isQuestionAnswered
+                            ? Colors.teal[400]!
+                            : Colors.deepOrangeAccent,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -123,53 +191,54 @@ class _LessonPagesState extends State<LessonPages> {
 
 class LessonEnd extends StatelessWidget {
   final int score, totalQ, currentQ;
-  const LessonEnd({super.key, required this.score, required this.totalQ, required this.currentQ});
+  final VoidCallback onRestart;
+
+  const LessonEnd({
+    super.key,
+    required this.score,
+    required this.totalQ,
+    required this.currentQ,
+    required this.onRestart,
+  });
+
+  void returnLessonPage(BuildContext context) {
+    onRestart();
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 20, 10, 100),
-              child: LinearProgressIndicator(
-                borderRadius: BorderRadius.circular(10),
-                value: currentQ - 1 / totalQ,
-                minHeight: 20,
-                backgroundColor: const Color.fromARGB(255, 195, 206, 215),
-                color: Colors.blue,
-              ),
+            Text(
+              "Test bitti!",
+              style: TextStyle(fontSize: 30, color: Colors.black),
             ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 25),
-              child: Text(
-                "$score / $totalQ",
-                style: TextStyle(fontSize: 20, color: Colors.black),
-              ),
+
+            Text(
+              "$score / $totalQ",
+              style: TextStyle(fontSize: 30, color: Colors.black),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 20, 10, 100),
-              child: Text(
-                "Testi bitirdiniz!",
-                style: TextStyle(fontSize: 30, color: Colors.black),
-              ),
-            ),
+
             ElevatedButton(
-              onPressed:
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LessonPages()),
-                  ),
+              onPressed: () => returnLessonPage(context),
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-                backgroundColor: const Color.fromARGB(255, 157, 233, 160),
+                padding: EdgeInsets.symmetric(
+                  vertical: screenHeight * 0.02,
+                  horizontal: screenWidth * 0.02,
+                ),
+                backgroundColor: Colors.blue,
                 foregroundColor: Colors.black,
                 elevation: 0,
               ),
-              child: Text("Geri dön", style: TextStyle(fontSize: 20)),
+              child: Text("Geri dön", style: TextStyle(fontSize: 30)),
             ),
           ],
         ),
