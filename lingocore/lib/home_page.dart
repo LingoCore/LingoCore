@@ -14,83 +14,73 @@ class _HomePage extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.yellow),
-      home: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text("LingoCore"),
-          actions: [
-            TextButton.icon(
-              style: TextButton.styleFrom(foregroundColor: Colors.amber[900]),
-              onPressed: () {},
-              label: Text("727"),
-              icon: Icon(Icons.star),
-            ),
-          ],
-        ),
-        body: PageView(
-          controller: pageController,
-          scrollDirection: Axis.horizontal,
-          onPageChanged:
-              (value) => setState(() {
-                currentPage = value;
-              }),
-          children: [
-            Container(
-              color: Colors.red[50],
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text("AI CHAT"),
-                    Icon(Icons.auto_awesome_outlined),
-                  ],
-                ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text("LingoCore"),
+        actions: [
+          TextButton.icon(
+            style: TextButton.styleFrom(foregroundColor: Colors.amber[900]),
+            onPressed: () {},
+            label: Text("727"),
+            icon: Icon(Icons.star),
+          ),
+        ],
+      ),
+      body: PageView(
+        controller: pageController,
+        scrollDirection: Axis.horizontal,
+        onPageChanged:
+            (value) => setState(() {
+              currentPage = value;
+            }),
+        children: [
+          Container(
+            color: Colors.red[50],
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [Text("AI CHAT"), Icon(Icons.auto_awesome_outlined)],
               ),
             ),
-           
-           // to customize Course screen
-            CourseScreen(),
-            
-            Container(
-              color: Colors.blue[50],
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [Text("GENEL CHAT"), Icon(Icons.chat_outlined)],
-                ),
+          ),
+          CourseScreen(),
+          Container(
+            color: Colors.blue[50],
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [Text("GENEL CHAT"), Icon(Icons.chat_outlined)],
               ),
             ),
-          ],
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          onTap: (index) {
-            setState(() {
-              currentPage = index;
-            });
-            if (pageController.page != currentPage) {
-              pageController.animateToPage(
-                currentPage,
-                duration: Durations.short2,
-                curve: Curves.ease,
-              );
-            }
-          },
-          currentIndex: currentPage,
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.auto_awesome_sharp),
-              label: "AI",
-            ),
-            BottomNavigationBarItem(icon: Icon(Icons.class_), label: "Ders"),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.chat_rounded),
-              label: "Chat",
-            ),
-          ],
-        ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: (index) {
+          setState(() {
+            currentPage = index;
+          });
+          if (pageController.page != currentPage) {
+            pageController.animateToPage(
+              currentPage,
+              duration: Durations.short2,
+              curve: Curves.ease,
+            );
+          }
+        },
+        currentIndex: currentPage,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.auto_awesome_sharp),
+            label: "AI",
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.class_), label: "Ders"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat_rounded),
+            label: "Chat",
+          ),
+        ],
       ),
     );
   }
