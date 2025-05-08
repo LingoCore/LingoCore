@@ -79,18 +79,11 @@ class _LessonPagesState extends State<LessonPages> {
 
   // Function to check if the answer is correct
   bool checkAnswer() {
-  if (answerList.length != correctAnswer.length) return false;
-  for (int i = 0; i < answerList.length; i++) {
-    if (answerList[i] != correctAnswer[i]) return false;
-  }
-  return true;
-}
-
-  // Function to restart the lesson
-  void restart() {
-    setState(() {
-      score = 0;
-    });
+    if (answerList.length != correctAnswer.length) return false;
+    for (int i = 0; i < answerList.length; i++) {
+      if (answerList[i] != correctAnswer[i]) return false;
+    }
+    return true;
   }
 
   // Function to switch between the answer and continue button
@@ -105,7 +98,7 @@ class _LessonPagesState extends State<LessonPages> {
         setState(() {
           currentQuestion = 1;
         });
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder:
@@ -113,7 +106,7 @@ class _LessonPagesState extends State<LessonPages> {
                   score: score,
                   totalQ: totalQuestions,
                   currentQ: currentQuestion,
-                  onRestart: restart,
+                  
                 ),
           ),
         );
@@ -191,20 +184,13 @@ class _LessonPagesState extends State<LessonPages> {
 
 class LessonEnd extends StatelessWidget {
   final int score, totalQ, currentQ;
-  final VoidCallback onRestart;
 
   const LessonEnd({
     super.key,
     required this.score,
     required this.totalQ,
     required this.currentQ,
-    required this.onRestart,
   });
-
-  void returnLessonPage(BuildContext context) {
-    onRestart();
-    Navigator.pop(context);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -228,7 +214,7 @@ class LessonEnd extends StatelessWidget {
             ),
 
             ElevatedButton(
-              onPressed: () => returnLessonPage(context),
+              onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(
                   vertical: screenHeight * 0.02,
