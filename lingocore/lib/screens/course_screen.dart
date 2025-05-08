@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lingocore/lesson_pages.dart';
 
 class CourseScreen extends StatefulWidget {
   const CourseScreen({super.key});
@@ -35,7 +36,7 @@ class _CourseScreenState extends State<CourseScreen> {
                   Navigator.push(
                     context, 
                     MaterialPageRoute(
-                      builder: (context) => LessonDetailPage(lessonTitle: lessonTitle),
+                      builder: (context) => LessonPages(),
                     )
                   );
                 },
@@ -80,11 +81,9 @@ class _CourseScreenState extends State<CourseScreen> {
                           ),
                         ),
                       ),
-
                       title: Text(lessonTitle),
                       subtitle: Text(lessonsDescription),
                       trailing: Icon(Icons.arrow_forward_ios),
-                      
                     ),
                   ),
                 ),
@@ -92,33 +91,6 @@ class _CourseScreenState extends State<CourseScreen> {
             ),
           );
         }
-      ),
-    );
-  }
-}
-
-
-class LessonDetailPage extends StatelessWidget {
-  
-  // lesson title from previous page
-  final String lessonTitle; 
-
-  // Constructor: Requires the course title to be retrieved when creating this page
-  const LessonDetailPage({Key? key, required this.lessonTitle}) : super(key: key);
-  
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(lessonTitle),
-      ),
-      body: Center(
-
-        child: Text(
-          'Bu sayfa "$lessonTitle" içeriğini gösterecektir.\n\nBuraya video, metin, alıştırmalar vb. ekleyebilirsiniz.',
-          style: TextStyle(fontSize: 19.0),
-          textAlign: TextAlign.center,
-        ),
       ),
     );
   }
