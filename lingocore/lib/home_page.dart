@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lingocore/dialogs/userinfo.dart';
+import 'package:lingocore/screens/ai_chat.dart';
 import 'package:lingocore/screens/course_screen.dart';
 
 class HomePage extends StatefulWidget {
@@ -37,20 +38,11 @@ class _HomePage extends State<HomePage> {
       body: PageView(
         controller: pageController,
         scrollDirection: Axis.horizontal,
-        onPageChanged:
-            (value) => setState(() {
-              currentPage = value;
-            }),
+        onPageChanged: (value) => setState(() {
+          currentPage = value;
+        }),
         children: [
-          Container(
-            color: Colors.red[50],
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [Text("AI CHAT"), Icon(Icons.auto_awesome_outlined)],
-              ),
-            ),
-          ),
+          AiChatScreen(),
           CourseScreen(),
           Container(
             color: Colors.blue[50],
