@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'dart:math'; // Import for random number generation
 
-class Massage {
+class Message {
   final String text;
   final DateTime date;
   final bool isMe;
+  final String username; // New property for the username
 
-  const Massage({required this.text, required this.date, required this.isMe});
+  const Message({
+    required this.text,
+    required this.date,
+    required this.isMe,
+    required this.username, // Add username to the constructor
+  });
 }
 
 class ChatScreen extends StatefulWidget {
@@ -16,44 +23,46 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  List<Massage> massages = [];
+  List<Message> messages = [];
   final TextEditingController _messageController = TextEditingController(); // Controller for input
   final ScrollController _scrollController = ScrollController(); // Controller for scrolling
+  final Map<String, Color> _usernameColors = {}; // Map to store colors for usernames
+  final Random _random = Random(); // Random generator
 
   @override
   void initState() {
     super.initState();
-    massages = [
-      Massage(text: "Hello!", date: DateTime(2025, 5, 1, 9, 0), isMe: false),
-      Massage(text: "Hi, how are you?", date: DateTime(2025, 5, 1, 9, 5), isMe: true),
-      Massage(text: "I'm good, thanks!", date: DateTime(2025, 5, 1, 9, 10), isMe: false),
-      Massage(text: "What about you?", date: DateTime(2025, 5, 1, 9, 15), isMe: false),
-      Massage(text: "I'm doing great!", date: DateTime(2025, 5, 1, 9, 20), isMe: true),
-      Massage(text: "What are you up to?", date: DateTime(2025, 5, 2, 10, 0), isMe: false),
-      Massage(text: "Just working on a project.", date: DateTime(2025, 5, 2, 10, 10), isMe: true),
-      Massage(text: "Sounds interesting!", date: DateTime(2025, 5, 2, 10, 15), isMe: false),
-      Massage(text: "Yeah, it is!", date: DateTime(2025, 5, 2, 10, 20), isMe: true),
-      Massage(text: "Do you need any help?", date: DateTime(2025, 5, 3, 11, 0), isMe: false),
-      Massage(text: "Not right now, but thanks!", date: DateTime(2025, 5, 3, 11, 5), isMe: true),
-      Massage(text: "Let me know if you do.", date: DateTime(2025, 5, 3, 11, 10), isMe: false),
-      Massage(text: "Sure, will do!", date: DateTime(2025, 5, 3, 11, 15), isMe: true),
-      Massage(text: "How's the weather there?", date: DateTime(2025, 5, 4, 12, 0), isMe: false),
-      Massage(text: "It's sunny and warm.", date: DateTime(2025, 5, 4, 12, 5), isMe: true),
-      Massage(text: "Lucky you! It's raining here.", date: DateTime(2025, 5, 4, 12, 10), isMe: false),
-      Massage(text: "Oh no, stay dry!", date: DateTime(2025, 5, 4, 12, 15), isMe: true),
-      Massage(text: "Will do, thanks!", date: DateTime(2025, 5, 5, 13, 0), isMe: false),
-      Massage(text: "Any plans for the weekend?", date: DateTime(2025, 5, 5, 13, 5), isMe: false),
-      Massage(text: "Not yet, you?", date: DateTime(2025, 5, 5, 13, 10), isMe: true),
-      Massage(text: "Thinking of going hiking.", date: DateTime(2025, 5, 5, 13, 15), isMe: false),
-      Massage(text: "That sounds fun!", date: DateTime(2025, 5, 5, 13, 20), isMe: true),
-      Massage(text: "Yeah, I hope the weather stays good.", date: DateTime(2025, 5, 6, 14, 0), isMe: false),
-      Massage(text: "Fingers crossed!", date: DateTime(2025, 5, 6, 14, 5), isMe: true),
-      Massage(text: "What about you?", date: DateTime(2025, 5, 6, 14, 10), isMe: false),
-      Massage(text: "Might just relax at home.", date: DateTime(2025, 5, 6, 14, 15), isMe: true),
-      Massage(text: "That sounds nice too.", date: DateTime(2025, 5, 6, 14, 20), isMe: false),
-      Massage(text: "Yeah, I need a break.", date: DateTime(2025, 5, 7, 15, 0), isMe: true),
-      Massage(text: "Take care!", date: DateTime(2025, 5, 7, 15, 5), isMe: false),
-      Massage(text: "You too!", date: DateTime(2025, 5, 7, 15, 10), isMe: true),
+    messages = [
+      Message(text: "Hello everyone!", date: DateTime(2025, 5, 1, 9, 0), isMe: false, username: "Alice"),
+      Message(text: "Hi Alice!", date: DateTime(2025, 5, 1, 9, 5), isMe: true, username: "Me"),
+      Message(text: "Good morning!", date: DateTime(2025, 5, 1, 9, 10), isMe: false, username: "Bob"),
+      Message(text: "How's everyone doing?", date: DateTime(2025, 5, 1, 9, 15), isMe: false, username: "Charlie"),
+      Message(text: "I'm doing great, thanks!", date: DateTime(2025, 5, 1, 9, 20), isMe: true, username: "Me"),
+      Message(text: "What about you?", date: DateTime(2025, 5, 1, 9, 25), isMe: false, username: "Alice"),
+      Message(text: "Just working on a project.", date: DateTime(2025, 5, 2, 10, 0), isMe: true, username: "Me"),
+      Message(text: "Sounds interesting!", date: DateTime(2025, 5, 2, 10, 15), isMe: false, username: "Bob"),
+      Message(text: "Yeah, it is!", date: DateTime(2025, 5, 2, 10, 20), isMe: true, username: "Me"),
+      Message(text: "Do you need any help?", date: DateTime(2025, 5, 3, 11, 0), isMe: false, username: "Charlie"),
+      Message(text: "Not right now, but thanks!", date: DateTime(2025, 5, 3, 11, 5), isMe: true, username: "Me"),
+      Message(text: "Let me know if you do.", date: DateTime(2025, 5, 3, 11, 10), isMe: false, username: "Alice"),
+      Message(text: "Sure, will do!", date: DateTime(2025, 5, 3, 11, 15), isMe: true, username: "Me"),
+      Message(text: "How's the weather there?", date: DateTime(2025, 5, 4, 12, 0), isMe: false, username: "Bob"),
+      Message(text: "It's sunny and warm.", date: DateTime(2025, 5, 4, 12, 5), isMe: true, username: "Me"),
+      Message(text: "Lucky you! It's raining here.", date: DateTime(2025, 5, 4, 12, 10), isMe: false, username: "Charlie"),
+      Message(text: "Oh no, stay dry!", date: DateTime(2025, 5, 4, 12, 15), isMe: true, username: "Me"),
+      Message(text: "Will do, thanks!", date: DateTime(2025, 5, 5, 13, 0), isMe: false, username: "Alice"),
+      Message(text: "Any plans for the weekend?", date: DateTime(2025, 5, 5, 13, 5), isMe: false, username: "Bob"),
+      Message(text: "Not yet, you?", date: DateTime(2025, 5, 5, 13, 10), isMe: true, username: "Me"),
+      Message(text: "Thinking of going hiking.", date: DateTime(2025, 5, 5, 13, 15), isMe: false, username: "Charlie"),
+      Message(text: "That sounds fun!", date: DateTime(2025, 5, 5, 13, 20), isMe: true, username: "Me"),
+      Message(text: "Yeah, I hope the weather stays good.", date: DateTime(2025, 5, 6, 14, 0), isMe: false, username: "Alice"),
+      Message(text: "Fingers crossed!", date: DateTime(2025, 5, 6, 14, 5), isMe: true, username: "Me"),
+      Message(text: "What about you?", date: DateTime(2025, 5, 6, 14, 10), isMe: false, username: "Bob"),
+      Message(text: "Might just relax at home.", date: DateTime(2025, 5, 6, 14, 15), isMe: true, username: "Me"),
+      Message(text: "That sounds nice too.", date: DateTime(2025, 5, 6, 14, 20), isMe: false, username: "Charlie"),
+      Message(text: "Yeah, I need a break.", date: DateTime(2025, 5, 7, 15, 0), isMe: true, username: "Me"),
+      Message(text: "Take care!", date: DateTime(2025, 5, 7, 15, 5), isMe: false, username: "Alice"),
+      Message(text: "You too!", date: DateTime(2025, 5, 7, 15, 10), isMe: true, username: "Me"),
     ];
   }
 
@@ -61,11 +70,12 @@ class _ChatScreenState extends State<ChatScreen> {
     final text = _messageController.text.trim();
     if (text.isNotEmpty) {
       setState(() {
-        massages.add(
-          Massage(
+        messages.add(
+          Message(
             text: text,
             date: DateTime.now(),
             isMe: true,
+            username: "Me", // Add username when sending a message
           ),
         );
       });
@@ -86,6 +96,22 @@ class _ChatScreenState extends State<ChatScreen> {
         curve: Curves.easeOut,
       );
     }
+  }
+
+  Color _getUsernameColor(String username) {
+    if (username == "Me") {
+      return Colors.blue; // Fixed color for "Me"
+    }
+    if (!_usernameColors.containsKey(username)) {
+      // Generate a random color if the username doesn't have one
+      _usernameColors[username] = Color.fromARGB(
+        255,
+        _random.nextInt(256),
+        _random.nextInt(256),
+        _random.nextInt(256),
+      );
+    }
+    return _usernameColors[username]!;
   }
 
   @override
@@ -146,7 +172,8 @@ class _ChatScreenState extends State<ChatScreen> {
     List<Widget> widgets = [];
     DateTime? lastDate;
 
-    for (var massage in massages) {
+    for (var massage in messages) {
+      // Add a date header if the date changes
       if (lastDate == null || !isSameDay(lastDate, massage.date)) {
         widgets.add(
           Padding(
@@ -162,6 +189,7 @@ class _ChatScreenState extends State<ChatScreen> {
         lastDate = massage.date;
       }
 
+      // Add the message bubble with the username
       widgets.add(
         Align(
           alignment: massage.isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -172,7 +200,24 @@ class _ChatScreenState extends State<ChatScreen> {
               color: massage.isMe ? Colors.blue[100] : Colors.grey[300],
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Text(massage.text),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  massage.username, // Display the username
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: _getUsernameColor(massage.username), // Use the color for the username
+                  ),
+                ),
+                const SizedBox(height: 5), // Add spacing between username and message
+                Text(
+                  massage.text, // Display the message text
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
           ),
         ),
       );
