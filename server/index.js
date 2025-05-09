@@ -4,7 +4,14 @@ import cors from "cors";
 import jwt from "jsonwebtoken";
 import { authenticate } from "./utils/authMiddleware.js";
 import { ACCESS_TOKEN_SECRET, generateToken, tokenProps } from "./utils/auth.js";
-import { sequelize, User } from "./db.js";
+import { sequelize } from "./db.js";
+import { setupRelations } from "./models/setup.js";
+import { UserModel } from "./models/user.js";
+import { UserRepository } from "./repositories/user.js";
+import { CourseModel } from "./models/course.js";
+import { UserCourseModel } from "./models/usercourse.js";
+import { LessonModel } from "./models/lesson.js";
+import { CourseRepository } from "./repositories/course.js";
 
 const app = express();
 const PORT = 3000;
@@ -16,18 +23,16 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.post("/api/auth/testlogin", async (req, res) => {
-  const { id } = req.body;
+  const { username } = req.body;
+  const repo = new UserRepository();
   try {
-    const user = await User.findByPk(id);
+    const user = await repo.findByUsername(username);
     if (!user) return res.status(401).json({ message: "User id not found." });
 
-    user.tokenVersion++;
-    await user.save();
-    const accessToken = generateToken(user, "access");
-    const refreshToken = generateToken(user, "refresh");
+    const {accessToken, refreshToken} = await repo.generateTokens(user.id);
     res.status(200).json({ message: "Login successful", accessToken, refreshToken });
-  } catch {
-    res.status(500).json({ message: "DB error" });
+  } catch (e) {
+    res.status(500).json({ message: e.toString() });
   }
 });
 
@@ -42,62 +47,89 @@ app.post("/api/auth/tokeninfo", (req, res) => {
   }
 })
 
-app.get("/api/user/:userId", authenticate, async (req, res) => {
-  const { userId } = req.params;
-  try {
-    const user = await User.findByPk(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+app.get("/api/user/:username", authenticate, async (req, res) => {
+  const { username } = req.params;
 
-    const data = user.get({ plain: true });
-    data.courses = JSON.parse(data.courses);
-    if (req.user.id === userId) {
-      return res.json({ user: data });
+  const repo = new UserRepository();
+  try {
+    const user = await repo.findByUsername(username);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    if (req.user.id === user.id) {
+      return res.json({ user: user });
     } else {
       return res.json({
-        user: { id: data.id, username: data.username, courses: data.courses },
+        user: { id: user.id, username: user.username, courses: user.userCourses },
       });
     }
-  } catch {
-    return res.status(500).json({ message: "DB error" });
+  } catch (e) {
+    return res.status(500).json({ message: e.toString() });
   }
 });
 
-app.post("/api/user/:userId", authenticate, async (req, res) => {
-  const { userId } = req.params;
-  const { username, email } = req.body;
-
-  // only allow owners to update their profile
-  if (req.user.id !== userId) {
-    return res.status(403).json({ message: "Forbidden: cannot update other user" });
-  }
-
+app.get("/api/course/list/all", authenticate, async (req, res) => {
+  const repo = new CourseRepository()
+  const courses = await repo.listAll();
   try {
-    const user = await User.findByPk(userId);
+    return res.status(200).json({ courses });
+  } catch (e) {
+    return res.status(500).json({ message: e.toString() });
+  }
+});
+
+app.post("/api/course/enroll", authenticate, async (req, res) => {
+  const { courseId } = req.body;
+  const userId = req.user.id;
+
+  const repo = new UserRepository();
+  try {
+    const user = await repo.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
+    await repo.enrollInCourse(user.id, courseId);
+    res.json({ message: "Successfully enrolled." });
+  } catch (e) {
+    res.status(500).json({ message: e.toString() });
+  }
+});
 
-    // update fields
-    if (username) user.username = username;
-    if (email) user.email = email;
-    await user.save();
+app.post("/api/course/leave", authenticate, async (req, res) => {
+  const { courseId } = req.body;
+  const userId = req.user.id;
 
-    const updated = user.get({ plain: true });
-    updated.courses = JSON.parse(updated.courses);
-    res.json({ user: updated });
-  } catch {
-    res.status(500).json({ message: "DB error" });
+  const repo = new UserRepository();
+  try {
+    await repo.leaveCourse(userId, courseId);
+    const user = await repo.findById(userId);
+    res.status(200).json({ message: "Successfully left the course." });
+  } catch (e) {
+    res.status(500).json({ message: e.toString() });
   }
 });
 
 // defer server start until DB is ready
+setupRelations();
 sequelize
   .sync()
   .then(async () => {
-    // seed if empty
-    if ((await User.count()) === 0) {
-      await User.bulkCreate([
-        { id: "0", username: "deniztunc", email: "deniz@example.com", courses: JSON.stringify(["english"]), tokenVersion: 0 },
-        { id: "1", username: "emrecamuz", email: "emre@example.com", courses: JSON.stringify(["english"]), tokenVersion: 0 },
-        { id: "2", username: "egeyolsal", email: "ege@example.com", courses: JSON.stringify(["english"]), tokenVersion: 0 },
+
+    if ((await UserModel.count()) === 0) {
+      await UserModel.bulkCreate([
+        { username: "deniztunc", email: "deniz@example.com", tokenVersion: 0 },
+        { username: "emrecamuz", email: "emre@example.com", tokenVersion: 0 },
+        { username: "egeyolsal", email: "ege@example.com", tokenVersion: 0 },
+      ]);
+    }
+    if ((await CourseModel.count()) === 0) {
+      await CourseModel.bulkCreate([
+        { displayName: "İngilizce", targetLanguage: "en-US", nativeLanguage: "tr-TR" },
+        { displayName: "Rusça", targetLanguage: "ru-RU", nativeLanguage: "tr-TR" },
+      ]);
+    }
+
+    if ((await LessonModel.count()) === 0) {
+      const enCourse = await CourseModel.findOne({ where: { displayName: "İngilizce" } });
+      await LessonModel.bulkCreate([
+        { title: "Lesson 1", courseId: enCourse.id, position: 1, questionCount: 10, description: "Lesson 1 description" },
+        { title: "Lesson 2", courseId: enCourse.id, position: 2, questionCount: 10, description: "Lesson 2 description" },
       ]);
     }
 
