@@ -21,10 +21,11 @@ export function setupRelations() {
   ChatMessageModel.belongsTo(CourseModel, { foreignKey: "courseId" });
 
   UserModel.hasMany(LessonSessionModel, { foreignKey: "userId" });
-  LessonSessionModel.hasMany(AnswerModel, { foreignKey: "lessonSessionId" });
-  AnswerModel.belongsTo(QuestionModel, { foreignKey: "questionId" });
+  LessonSessionModel.hasMany(AnswerModel, { foreignKey: "lessonSessionId", as: "answers" });
+  AnswerModel.belongsTo(QuestionModel, { foreignKey: "questionId", as: "question" });
+  LessonSessionModel.belongsTo(QuestionModel, { foreignKey: "currentQuestionId", as: "currentQuestion" });
 
-  LessonSessionModel.belongsTo(LessonModel, { foreignKey: "lessonId" });
+  LessonSessionModel.belongsTo(LessonModel, { foreignKey: "lessonId", as: "lesson" });
 
 
   UserModel.hasMany(ChatMessageModel, { foreignKey: "userId" });

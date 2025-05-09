@@ -12,7 +12,11 @@ export const LessonModel = sequelize.define("Lesson", {
     allowNull: false,
     unique: "lessonPosition"
   },
-  position: { type: DataTypes.FLOAT, allowNull: false, unique: "lessonPosition" },
+  position: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+    unique: "lessonPosition"
+  },
   title: DataTypes.STRING,
   description: DataTypes.STRING,
   questionCount: DataTypes.INTEGER,

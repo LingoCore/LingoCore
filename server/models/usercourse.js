@@ -21,7 +21,7 @@ export const UserCourseModel = sequelize.define("userCourse", {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-            model: "lessons",
+            model: "Lessons",
             key: "id",
         },
     },

@@ -1,6 +1,7 @@
 export class Lesson {
-    constructor({id, position, title, description, questionCount}) {
+    constructor({id, courseId, position, title, description, questionCount}) {
         this.id = id;
+        this.courseId = courseId;
         this.position = position;
         this.title = title;
         this.description = description;
