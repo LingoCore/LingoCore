@@ -1,19 +1,17 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import jwt from "jsonwebtoken";
 import { authenticate } from "./utils/authMiddleware.js";
-import { ACCESS_TOKEN_SECRET, generateToken, tokenProps } from "./utils/auth.js";
 import { sequelize } from "./db.js";
 import { setupRelations } from "./models/setup.js";
 import { UserModel } from "./models/user.js";
-import { UserRepository } from "./repositories/user.js";
 import { CourseModel } from "./models/course.js";
-import { UserCourseModel } from "./models/usercourse.js";
 import { LessonModel } from "./models/lesson.js";
-import { CourseRepository } from "./repositories/course.js";
+import { courseEnroll, courseLeave, courseListAll } from "./routes/course.js";
+import { userInfo } from "./routes/user.js";
+import { authTestlogin, authTokeninfo } from "./routes/auth.js";
 
-const app = express();
+export const app = express();
 const PORT = 3000;
 
 process.loadEnvFile();
@@ -22,90 +20,25 @@ process.loadEnvFile();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.post("/api/auth/testlogin", async (req, res) => {
-  const { username } = req.body;
-  const repo = new UserRepository();
-  try {
-    const user = await repo.findByUsername(username);
-    if (!user) return res.status(401).json({ message: "User id not found." });
+/* api/auth */
 
-    const {accessToken, refreshToken} = await repo.generateTokens(user.id);
-    res.status(200).json({ message: "Login successful", accessToken, refreshToken });
-  } catch (e) {
-    res.status(500).json({ message: e.toString() });
-  }
-});
+app.post("/api/auth/testlogin", authTestlogin);
 
-app.post("/api/auth/tokeninfo", (req, res) => {
-  const { token, type } = req.body;
-  try {
-    const decoded = jwt.verify(token, tokenProps[type].secret);
-    res.json(decoded).send();
-  } catch (e) {
-    console.error(e)
-    res.json({ error: e }).send();
-  }
-})
+app.post("/api/auth/tokeninfo", authTokeninfo)
 
-app.get("/api/user/:username", authenticate, async (req, res) => {
-  const { username } = req.params;
+/* api/user */
 
-  const repo = new UserRepository();
-  try {
-    const user = await repo.findByUsername(username);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    if (req.user.id === user.id) {
-      return res.json({ user: user });
-    } else {
-      return res.json({
-        user: { id: user.id, username: user.username, courses: user.userCourses },
-      });
-    }
-  } catch (e) {
-    return res.status(500).json({ message: e.toString() });
-  }
-});
+app.get("/api/user/:username", authenticate, userInfo);
 
-app.get("/api/course/list/all", authenticate, async (req, res) => {
-  const repo = new CourseRepository()
-  const courses = await repo.listAll();
-  try {
-    return res.status(200).json({ courses });
-  } catch (e) {
-    return res.status(500).json({ message: e.toString() });
-  }
-});
+/* api/course  */
 
-app.post("/api/course/enroll", authenticate, async (req, res) => {
-  const { courseId } = req.body;
-  const userId = req.user.id;
+app.get("/api/course/list/all", authenticate, courseListAll);
 
-  const repo = new UserRepository();
-  try {
-    const user = await repo.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    await repo.enrollInCourse(user.id, courseId);
-    res.json({ message: "Successfully enrolled." });
-  } catch (e) {
-    res.status(500).json({ message: e.toString() });
-  }
-});
+app.post("/api/course/enroll", authenticate, courseEnroll);
 
-app.post("/api/course/leave", authenticate, async (req, res) => {
-  const { courseId } = req.body;
-  const userId = req.user.id;
+app.post("/api/course/leave", authenticate, courseLeave);
 
-  const repo = new UserRepository();
-  try {
-    await repo.leaveCourse(userId, courseId);
-    const user = await repo.findById(userId);
-    res.status(200).json({ message: "Successfully left the course." });
-  } catch (e) {
-    res.status(500).json({ message: e.toString() });
-  }
-});
 
-// defer server start until DB is ready
 setupRelations();
 sequelize
   .sync()
