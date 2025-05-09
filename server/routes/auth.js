@@ -1,4 +1,6 @@
 import { UserRepository } from "../repositories/user.js";
+import jwt from "jsonwebtoken";
+import { tokenProps } from "../utils/auth.js";
 
 /** @type {import("express").RequestHandler} */
 export const authTestlogin = async (req, res) => {

@@ -43,10 +43,13 @@ export class UserRepository {
 
   async enrollInCourse(userId, courseId) {
     if (await UserCourseModel.count({where: {userId: userId, courseId: courseId}}) !== 0) {
-      throw new Error(`User #${userId} enrolled in course #${courseId}`);
+      throw new Error(`User #${userId} is already enrolled in course #${courseId}`);
     }
-    LessonModel.findOne({where: {courseId: courseId}, order: [["position", "ASC"]]});
-    return UserCourseModel.create({courseId: courseId, userId: userId})
+    const firstLesson = await LessonModel.findOne({where: {courseId: courseId}, order: [['position', 'ASC']]});
+    if (!firstLesson) {
+      throw new Error(`Course #${courseId} has no lessons`);
+    }
+    return UserCourseModel.create({courseId: courseId, userId: userId, currentLessonId: firstLesson.id })
   }
 
   async leaveCourse(userId, courseId) {

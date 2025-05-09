@@ -17,8 +17,13 @@ export const UserCourseModel = sequelize.define("userCourse", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    currentLesson: {
-        type: DataTypes.STRING,
+    currentLessonId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: "lessons",
+            key: "id",
+        },
     },
     lastAccessedAt: {
         type: DataTypes.DATE,

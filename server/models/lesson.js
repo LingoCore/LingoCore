@@ -7,7 +7,12 @@ export const LessonModel = sequelize.define("Lesson", {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
   },
-  position: { type: DataTypes.FLOAT, allowNull: false, unique: true, },
+  courseId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    unique: "lessonPosition"
+  },
+  position: { type: DataTypes.FLOAT, allowNull: false, unique: "lessonPosition" },
   title: DataTypes.STRING,
   description: DataTypes.STRING,
   questionCount: DataTypes.INTEGER,

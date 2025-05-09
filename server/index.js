@@ -64,6 +64,11 @@ sequelize
         { title: "Lesson 1", courseId: enCourse.id, position: 1, questionCount: 10, description: "Lesson 1 description" },
         { title: "Lesson 2", courseId: enCourse.id, position: 2, questionCount: 10, description: "Lesson 2 description" },
       ]);
+      const ruCourse = await CourseModel.findOne({ where: { displayName: "Rusça" } });
+      await LessonModel.bulkCreate([
+        { title: "Урок 1", courseId: ruCourse.id, position: 1, questionCount: 10, description: "Описание первого урока" },
+        { title: "Урок 2", courseId: ruCourse.id, position: 2, questionCount: 10, description: "Описание второго урока" },
+      ]);
     }
 
     app.listen(PORT, () => {
