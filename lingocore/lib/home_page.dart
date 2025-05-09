@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lingocore/dialogs/userinfo.dart';
 import 'package:lingocore/screens/course_screen.dart';
-
+import 'package:lingocore/screens/chat_screen.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -52,15 +52,7 @@ class _HomePage extends State<HomePage> {
             ),
           ),
           CourseScreen(),
-          Container(
-            color: Colors.blue[50],
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [Text("GENEL CHAT"), Icon(Icons.chat_outlined)],
-              ),
-            ),
-          ),
+          ChatScreen(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
