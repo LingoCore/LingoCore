@@ -35,7 +35,6 @@ export const sessionPost = async (req, res) => {
     const { answer } = req.body;
     const userId = req.user.id;
     const repo = new LessonSessionRepository();
-    debugger;
     try {
         const {isCorrect, correctAnswer} = await repo.answerQuestion(sessionId, answer);
         return res.status(200).json({ message: "Answer submitted successfully", isCorrect, correctAnswer });

@@ -49,12 +49,10 @@ export class LessonSessionRepository {
 
     async getState(id) {
         const session = await this.findById(id);
-        debugger;
         if (!session) {
             throw new Error(`Session with id ${id} not found`);
         }
         const answers = session.answers;
-        debugger;
         const correctAnswers = answers.filter(answer => answer.question.answer === answer.answer);
         const wrongAnswers = answers.filter(answer => answer.question.answer !== answer.answer);
         const currentQuestion = session.currentQuestion;
