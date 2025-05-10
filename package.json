@@ -1,9 +1,10 @@
 {
   "name": "lingocore",
   "scripts": {
-    "full": "concurrently -k \"npm run server\" \"npm run flutter\"",
-    "server": "nodemon server/index.js",
+    "full": "concurrently -k --raw \"npm run server\" \"npm run flutter\"",
+    "server": "node --watch --watch-path=./server --watch-preserve-output server/index.js",
     "flutter": "cd lingocore && flutter run",
+    "tmux": "tmux new-session -d -s lingocore-session \"npm run server\" \\; split-window -h \"npm run flutter\" \\; attach-session -t lingocore-session",
     "start": "node server/index.js",
     "flutter:build": "cd lingocore && flutter build",
     "server:prod": "node server/index.js"
@@ -13,10 +14,12 @@
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "google-auth-library": "^9.15.1"
+    "google-auth-library": "^9.15.1",
+    "jsonwebtoken": "^9.0.2",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2",
-    "nodemon": "^3.0.2"
+    "concurrently": "^8.2.2"
   }
 }
