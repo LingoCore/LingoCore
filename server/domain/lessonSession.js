@@ -14,4 +14,19 @@ export class LessonSession {
         /** @type {Answer[]} */
         this.answers = answers.map((a) => new Answer(a));
     }
+
+    calculateProgress() {
+        const correctAnswers = this.answers.filter(answer => answer.question.answer === answer.answer);
+        const wrongAnswers = this.answers.filter(answer => answer.question.answer !== answer.answer);
+        return correctAnswers.length / this.questionCount - (wrongAnswers.length / this.questionCount * 0.2);
+    }
+
+    getStatistics() {
+        const correctAnswers = this.answers.filter(answer => answer.question.answer === answer.answer);
+        const wrongAnswers = this.answers.filter(answer => answer.question.answer !== answer.answer);
+        return {
+            correctAnswers: correctAnswers.length,
+            wrongAnswers: wrongAnswers.length,
+        }
+    }
 }

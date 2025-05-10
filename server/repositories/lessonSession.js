@@ -52,15 +52,14 @@ export class LessonSessionRepository {
         if (!session) {
             throw new Error(`Session with id ${id} not found`);
         }
-        const answers = session.answers;
-        const correctAnswers = answers.filter(answer => answer.question.answer === answer.answer);
-        const wrongAnswers = answers.filter(answer => answer.question.answer !== answer.answer);
         const currentQuestion = session.currentQuestion;
         delete currentQuestion.answer;
-        const progress = correctAnswers.length / session.questionCount - (wrongAnswers.length / session.questionCount * 0.2);
+        const progress = session.calculateProgress();
+        const canFinish = progress > 1;
         return {
             progress,
             currentQuestion,
+            canFinish
         }
 
     }
@@ -91,6 +90,18 @@ export class LessonSessionRepository {
             isCorrect,
             correctAnswer: question.answer,
         }
+    }
+
+    async finishSession(sessionId) {
+        const session = await this.findById(sessionId);
+        if (!session) {
+            throw new Error(`Session with id ${sessionId} not found`);
+        }
+        if (session.calculateProgress() < 1) {
+            throw new Error(`Session with id ${sessionId} is not finished yet`);
+        }
+        await LessonSessionModel.destroy({where: {id: sessionId}});
+        return session;
     }
 
     async getRandomQuestion(lessonId) {

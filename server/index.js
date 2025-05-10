@@ -10,7 +10,7 @@ import { LessonModel } from "./models/lesson.js";
 import { courseEnroll, courseLeave, courseListAll } from "./routes/course.js";
 import { userInfo } from "./routes/user.js";
 import { authTestlogin, authTokeninfo } from "./routes/auth.js";
-import { sessionStart, sessionGet, sessionPost } from "./routes/session.js";
+import { sessionStart, sessionGet, sessionPost, sessionFinish } from "./routes/session.js";
 import { QuestionModel } from "./models/question.js";
 
 export const app = express();
@@ -46,6 +46,8 @@ app.post("/api/session/start", authenticate, sessionStart);
 app.get("/api/session/:sessionId", authenticate, sessionGet);
 
 app.post("/api/session/:sessionId", authenticate, sessionPost);
+
+app.post("/api/session/finish/:sessionId", authenticate, sessionFinish);
 
 setupRelations();
 sequelize
