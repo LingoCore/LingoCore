@@ -12,7 +12,7 @@ export class UserRepository {
   }
 
   async findByUsername(username) {
-    const user = await UserModel.findOne({where: {username: username}, include: UserCourseModel});
+    const user = await UserModel.findOne({where: {username: username}, include: [{model: UserCourseModel, include: [{model: CourseModel, as: "course"}]}]});
     return user ? new User(user.dataValues) : null;
   }
 

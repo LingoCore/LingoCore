@@ -11,8 +11,8 @@ export function setupRelations() {
   UserModel.hasMany(UserCourseModel, { foreignKey: "userId" });
   UserCourseModel.belongsTo(UserModel, { foreignKey: "userId" });
 
-  UserCourseModel.belongsTo(CourseModel, { foreignKey: "courseId" });
-  CourseModel.hasMany(LessonModel, { foreignKey: "courseId" });
+  UserCourseModel.belongsTo(CourseModel, { foreignKey: "courseId", as: "course" });
+  CourseModel.hasMany(LessonModel, { foreignKey: "courseId", as: "lessons" });
   LessonModel.belongsTo(CourseModel, { foreignKey: "courseId" });
   LessonModel.hasMany(QuestionModel, { foreignKey: "lessonId" });
   QuestionModel.belongsTo(LessonModel, { foreignKey: "lessonId" });

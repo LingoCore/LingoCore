@@ -1,18 +1,19 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:lingocore/api/course.dart';
 import 'api.dart';
 
 class User {
   final String id;
   final String username;
   final String? email;
-  final List<String> courses;
+  final List<UserCourse> userCourses;
 
   User({
     required this.id,
     required this.username,
     this.email,
-    required this.courses,
+    required this.userCourses,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -20,13 +21,25 @@ class User {
       id: json['id'],
       username: json['username'],
       email: json['email'],
-      courses: List<String>.from(json['courses'] as List),
+      userCourses:
+          (json['userCourses'] as List<dynamic>)
+              .map((item) => UserCourse.fromJson(item))
+              .toList(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'username': username,
+      'email': email,
+      'userCourses': userCourses.map((course) => course.toJson()).toList(),
+    };
   }
 }
 
-Future<User> getUser(String userId, String accessToken) async {
-  final url = serverUrlBase.replace(path: '/api/user/$userId');
+Future<User> userInfo(String username, String accessToken) async {
+  final url = serverUrlBase.replace(path: '/api/user/$username');
   final response = await http.get(
     url,
     headers: {
@@ -39,32 +52,5 @@ Future<User> getUser(String userId, String accessToken) async {
     return User.fromJson(body['user']);
   } else {
     throw Exception('Failed to fetch user: ${body['message']}');
-  }
-}
-
-Future<User> updateUser(
-  String userId, {
-  String? username,
-  String? email,
-  required String accessToken,
-}) async {
-  final url = serverUrlBase.replace(path: '/api/user/$userId');
-  final payload = <String, dynamic>{};
-  if (username != null) payload['username'] = username;
-  if (email != null) payload['email'] = email;
-
-  final response = await http.post(
-    url,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $accessToken',
-    },
-    body: jsonEncode(payload),
-  );
-  final body = jsonDecode(response.body);
-  if (response.statusCode == 200) {
-    return User.fromJson(body['user']);
-  } else {
-    throw Exception('Failed to update user: ${body['message']}');
   }
 }

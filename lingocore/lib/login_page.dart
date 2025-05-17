@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lingocore/home_page.dart';
+import 'package:lingocore/dialogs/loginflow.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -36,11 +36,15 @@ class LoginPage extends StatelessWidget {
               child: InkWell(
                 splashFactory: InkRipple.splashFactory,
                 borderRadius: BorderRadius.circular(10),
-                onTap:
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
-                    ),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return LoginFlow();
+                    },
+                  );
+                },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
