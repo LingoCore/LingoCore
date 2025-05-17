@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'dart:math'; // Import for random number generation
+import 'dart:math';
 
 class Message {
   final String text;
   final DateTime date;
   final bool isMe;
-  final String username; // New property for the username
+  final String username;
 
   const Message({
     required this.text,
     required this.date,
     required this.isMe,
-    required this.username, // Add username to the constructor
+    required this.username,
   });
 }
 
@@ -22,17 +22,20 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends State<ChatScreen> with AutomaticKeepAliveClientMixin {
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   List<Message> messages = [];
-  final TextEditingController _messageController = TextEditingController(); // Controller for input
-  final ScrollController _scrollController = ScrollController(); // Controller for scrolling
-  final Map<String, Color> _usernameColors = {}; // Map to store colors for usernames
-  final Random _random = Random(); // Random generator
+  final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  final Map<String, Color> _usernameColors = {};
+  final Random _random = Random();
 
   @override
   void initState() {
     super.initState();
-    messages = [
+
+    // Başlangıç mesajlarını eklemek için:
+      messages = [
       Message(text: "Hello everyone!", date: DateTime(2025, 5, 1, 9, 0), isMe: false, username: "Alice"),
       Message(text: "Hi Alice!", date: DateTime(2025, 5, 1, 9, 5), isMe: true, username: "Me"),
       Message(text: "Good morning!", date: DateTime(2025, 5, 1, 9, 10), isMe: false, username: "Bob"),
@@ -64,25 +67,33 @@ class _ChatScreenState extends State<ChatScreen> {
       Message(text: "Take care!", date: DateTime(2025, 5, 7, 15, 5), isMe: false, username: "Alice"),
       Message(text: "You too!", date: DateTime(2025, 5, 7, 15, 10), isMe: true, username: "Me"),
     ];
+
+    // AnimatedList'a başta mesajları animasyonla eklemek için:
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (var i = 0; i < messages.length; i++) {
+        _listKey.currentState?.insertItem(i, duration: const Duration(milliseconds: 300));
+      }
+      _scrollToBottom();
+    });
   }
 
   void _sendMessage() {
     final text = _messageController.text.trim();
     if (text.isNotEmpty) {
+      final newMessage = Message(
+        text: text,
+        date: DateTime.now(),
+        isMe: true,
+        username: "Me",
+      );
       setState(() {
-        messages.add(
-          Message(
-            text: text,
-            date: DateTime.now(),
-            isMe: true,
-            username: "Me", // Add username when sending a message
-          ),
-        );
+        messages.add(newMessage);
+        _listKey.currentState?.insertItem(messages.length - 1, duration: const Duration(milliseconds: 300));
       });
-      _messageController.clear(); // Clear the input field after sending
+      _messageController.clear();
 
-      // Ensure scrolling happens after the new message is rendered
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Animasyonun bitmesini bekleyip sonra kaydır
+      Future.delayed(const Duration(milliseconds: 350), () {
         _scrollToBottom();
       });
     }
@@ -100,10 +111,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Color _getUsernameColor(String username) {
     if (username == "Me") {
-      return Colors.blue; // Fixed color for "Me"
+      return Colors.blue;
     }
     if (!_usernameColors.containsKey(username)) {
-      // Generate a random color if the username doesn't have one
       _usernameColors[username] = Color.fromARGB(
         255,
         _random.nextInt(256),
@@ -114,8 +124,16 @@ class _ChatScreenState extends State<ChatScreen> {
     return _usernameColors[username]!;
   }
 
+  // Tarih başlığı için yardımcı
+  bool _isNewDate(int index) {
+    if (index == 0) return true;
+    return !isSameDay(messages[index].date, messages[index - 1].date);
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context); // for AutomaticKeepAliveClientMixin
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -124,9 +142,68 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Column(
         children: [
           Expanded(
-            child: ListView(
-              controller: _scrollController, // Attach the scroll controller
-              children: _buildMessagesWithHeaders(),
+            child: AnimatedList(
+              key: _listKey,
+              controller: _scrollController,
+              initialItemCount: messages.length,
+              itemBuilder: (context, index, animation) {
+                if (index < 0 || index >= messages.length) {
+                  return const SizedBox.shrink(); // Hatalı index için boş widget döndür
+                }
+                final message = messages[index];
+
+                return SizeTransition(
+                  sizeFactor: animation,
+                  axisAlignment: 0.0,
+                  child: Column(
+                    children: [
+                      if (_isNewDate(index))
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Center(
+                            child: Text(
+                              _formatDate(message.date),
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      Align(
+                        alignment: message.isMe ? Alignment.centerRight : Alignment.centerLeft,
+                        child: Container(
+                          constraints: BoxConstraints(
+                            minWidth: 60,
+                            maxWidth: MediaQuery.of(context).size.width * 0.7,
+                          ),
+                          margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: message.isMe ? Colors.blue[100] : Colors.grey[300],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                message.username,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: _getUsernameColor(message.username),
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                message.text,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
           Container(
@@ -137,28 +214,28 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: TextField(
                     controller: _messageController,
                     decoration: InputDecoration(
-                      filled: true, // Adds a background color
-                      fillColor: Colors.grey[200], // Light grey background
+                      filled: true,
+                      fillColor: Colors.grey[200],
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20), // Rounded corners
-                        borderSide: BorderSide.none, // Removes the border line
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide.none,
                       ),
                       hintText: 'Type your message...',
-                      hintStyle: const TextStyle(color: Colors.grey), // Hint text color
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Padding inside the field
+                      hintStyle: const TextStyle(color: Colors.grey),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     ),
-                    style: const TextStyle(fontSize: 16), // Text style for user input
-                    textInputAction: TextInputAction.send, // Changes the keyboard action button to "Send"
-                    onSubmitted: (value) => _sendMessage(), // Send message on "Enter" key
+                    style: const TextStyle(fontSize: 16),
+                    textInputAction: TextInputAction.send,
+                    onSubmitted: (value) => _sendMessage(),
                   ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.send),
-                  iconSize: 24, // Adjust the size of the icon
-                  color: Colors.blue, // Change the color of the icon
-                  padding: const EdgeInsets.all(8), // Add padding around the icon
-                  splashRadius: 20, // Adjust the splash effect radius
-                  onPressed: _sendMessage, // Call the send message method
+                  iconSize: 24,
+                  color: Colors.blue,
+                  padding: const EdgeInsets.all(8),
+                  splashRadius: 20,
+                  onPressed: _sendMessage,
                 ),
               ],
             ),
@@ -168,64 +245,6 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  List<Widget> _buildMessagesWithHeaders() {
-    List<Widget> widgets = [];
-    DateTime? lastDate;
-
-    for (var massage in messages) {
-      // Add a date header if the date changes
-      if (lastDate == null || !isSameDay(lastDate, massage.date)) {
-        widgets.add(
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Center(
-              child: Text(
-                _formatDate(massage.date),
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-        );
-        lastDate = massage.date;
-      }
-
-      // Add the message bubble with the username
-      widgets.add(
-        Align(
-          alignment: massage.isMe ? Alignment.centerRight : Alignment.centerLeft,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: massage.isMe ? Colors.blue[100] : Colors.grey[300],
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  massage.username, // Display the username
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: _getUsernameColor(massage.username), // Use the color for the username
-                  ),
-                ),
-                const SizedBox(height: 5), // Add spacing between username and message
-                Text(
-                  massage.text, // Display the message text
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-
-    return widgets;
-  }
-
   bool isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
   }
@@ -233,4 +252,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String _formatDate(DateTime date) {
     return "${date.day}/${date.month}/${date.year}";
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
