@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lingocore/dialogs/userinfo.dart';
 import 'package:lingocore/screens/course_screen.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,11 +20,17 @@ class _HomePage extends State<HomePage> {
         centerTitle: true,
         title: Text("LingoCore"),
         actions: [
-          TextButton.icon(
-            style: TextButton.styleFrom(foregroundColor: Colors.amber[900]),
-            onPressed: () {},
-            label: Text("727"),
-            icon: Icon(Icons.star),
+          IconButton(
+            style: IconButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.primary,
+            ),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => UserInfoDialog(),
+              );
+            },
+            icon: Icon(Icons.person),
           ),
         ],
       ),

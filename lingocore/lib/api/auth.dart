@@ -4,6 +4,14 @@ import 'package:http/http.dart' as http;
 import 'package:lingocore/api/api.dart';
 
 enum TokenType { access, refresh }
+String tokenTypeToString(TokenType type) {
+  switch (type) {
+    case TokenType.access:
+      return "access";
+    case TokenType.refresh:
+      return "refresh";
+  }
+}
 
 class Tokens {
   String accessToken;
@@ -12,12 +20,12 @@ class Tokens {
   Tokens({required this.accessToken, required this.refreshToken});
 }
 
-Future<Tokens> testlogin(String id) async {
+Future<Tokens> testlogin(String username) async {
   final url = serverUrlBase.replace(path: "/api/auth/testlogin");
   final response = await http.post(
     url,
     headers: {'Content-Type': 'application/json'},
-    body: jsonEncode({'id': id}),
+    body: jsonEncode({'username': username}),
   );
   final responseBody = jsonDecode(response.body);
   if (response.statusCode == 200) {
@@ -56,6 +64,16 @@ class TokenInfo {
       exp: json['exp'],
     );
   }
+
+  Map<String, dynamic>? toJson() {
+    return {
+      'id': id,
+      'type': type.toString().split('.').last,
+      'version': version,
+      'iat': iat,
+      'exp': exp,
+    };
+  }
 }
 
 Future<TokenInfo> tokenInfo(String token, TokenType type) async {
@@ -63,7 +81,7 @@ Future<TokenInfo> tokenInfo(String token, TokenType type) async {
   final response = await http.post(
     url,
     headers: {'Content-Type': 'application/json'},
-    body: {"token": token, "type": type},
+    body: jsonEncode({"token": token, "type": tokenTypeToString(type)}),
   );
   final responseBody = jsonDecode(response.body);
   if (responseBody["error"] != null) {

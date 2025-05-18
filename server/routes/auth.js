@@ -4,6 +4,8 @@ import { tokenProps } from "../utils/auth.js";
 
 /** @type {import("express").RequestHandler} */
 export const authTestlogin = async (req, res) => {
+  // 😭, yüklenme animasyonu çıkınca daha güzel
+  await new Promise((resolve) => setTimeout(resolve, 500)); 
   const { username } = req.body;
   const repo = new UserRepository();
   try {
