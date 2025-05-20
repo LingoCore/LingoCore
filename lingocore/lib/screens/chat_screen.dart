@@ -92,8 +92,8 @@ class _ChatScreenState extends State<ChatScreen> with AutomaticKeepAliveClientMi
       });
       _messageController.clear();
 
-      // Animasyonun bitmesini bekleyip sonra kaydır
-      Future.delayed(const Duration(milliseconds: 350), () {
+      // Önce animasyonu göster, sonra kaydır
+      Future.delayed(const Duration(milliseconds: 300), () {
         _scrollToBottom();
       });
     }
@@ -124,7 +124,7 @@ class _ChatScreenState extends State<ChatScreen> with AutomaticKeepAliveClientMi
     return _usernameColors[username]!;
   }
 
-  // Tarih başlığı için yardımcı
+  // for date header
   bool _isNewDate(int index) {
     if (index == 0) return true;
     return !isSameDay(messages[index].date, messages[index - 1].date);
@@ -142,66 +142,57 @@ class _ChatScreenState extends State<ChatScreen> with AutomaticKeepAliveClientMi
       body: Column(
         children: [
           Expanded(
-            child: AnimatedList(
-              key: _listKey,
+            child: ListView.builder(
               controller: _scrollController,
-              initialItemCount: messages.length,
-              itemBuilder: (context, index, animation) {
-                if (index < 0 || index >= messages.length) {
-                  return const SizedBox.shrink(); // Hatalı index için boş widget döndür
-                }
+              itemCount: messages.length,
+              itemBuilder: (context, index) {
                 final message = messages[index];
-
-                return SizeTransition(
-                  sizeFactor: animation,
-                  axisAlignment: 0.0,
-                  child: Column(
-                    children: [
-                      if (_isNewDate(index))
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Center(
-                            child: Text(
-                              _formatDate(message.date),
-                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                      Align(
-                        alignment: message.isMe ? Alignment.centerRight : Alignment.centerLeft,
-                        child: Container(
-                          constraints: BoxConstraints(
-                            minWidth: 60,
-                            maxWidth: MediaQuery.of(context).size.width * 0.7,
-                          ),
-                          margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: message.isMe ? Colors.blue[100] : Colors.grey[300],
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                message.username,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: _getUsernameColor(message.username),
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                message.text,
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                            ],
+                return Column(
+                  children: [
+                    if (_isNewDate(index))
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Center(
+                          child: Text(
+                            _formatDate(message.date),
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    Align(
+                      alignment: message.isMe ? Alignment.centerRight : Alignment.centerLeft,
+                      child: Container(
+                        constraints: BoxConstraints(
+                          minWidth: 60,
+                          maxWidth: MediaQuery.of(context).size.width * 0.7,
+                        ),
+                        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: message.isMe ? Colors.blue[100] : Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              message.username,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: _getUsernameColor(message.username),
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              message.text,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               },
             ),
