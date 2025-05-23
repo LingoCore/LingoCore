@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lingocore/theme.dart';
 import 'package:lingocore/widgets/questions.dart';
 import 'package:lingocore/widgets/common_question_button.dart';
 
@@ -146,8 +147,9 @@ class _LessonPagesState extends State<LessonPages> {
                     child: LinearProgressIndicator(
                       value: value,
                       backgroundColor:
-                          Theme.of(context).colorScheme.surfaceContainerHighest,
-                      color: Colors.blue,
+                        getFlavour(context).surface1,
+                      color:  Color.lerp(getFlavour(context).blue, getFlavour(context).green, (currentQuestion - 1) / totalQuestions),
+                        // Theme.of(context).colorScheme.secondary,
                       minHeight: 15,
                     ),
                   );
@@ -169,8 +171,8 @@ class _LessonPagesState extends State<LessonPages> {
                     onPressed: () => toggleContinueButton(),
                     backgroundColor:
                         isQuestionAnswered
-                            ? Colors.teal[400]!
-                            : Colors.deepOrangeAccent,
+                            ? Colors.green
+                            : Colors.green,
                   ),
                 ),
               ),
@@ -194,8 +196,6 @@ class LessonEnd extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -205,26 +205,19 @@ class LessonEnd extends StatelessWidget {
           children: [
             Text(
               "Test bitti!",
-              style: TextStyle(fontSize: 30, color: Colors.black),
+              style: TextStyle(fontSize: 30, color: Theme.of(context).colorScheme.onSurface),
             ),
 
             Text(
               "$score / $totalQ",
-              style: TextStyle(fontSize: 30, color: Colors.black),
+              style: TextStyle(fontSize: 30, color: Theme.of(context).colorScheme.onSurface),
             ),
 
-            ElevatedButton(
+            CommonButton(
               onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(
-                  vertical: screenHeight * 0.02,
-                  horizontal: screenWidth * 0.02,
-                ),
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.black,
-                elevation: 0,
-              ),
-              child: Text("Geri dön", style: TextStyle(fontSize: 30)),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              text: "Geri Dön",
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
             ),
           ],
         ),
