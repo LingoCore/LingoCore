@@ -63,9 +63,9 @@ class UserInfoDialog extends StatelessWidget {
                     clearGlobals();
                     Navigator.pushReplacementNamed(context, "login");
                   },
-                  child: const Text(
+                  child: Text(
                     "Çıkış Yap",
-                    style: TextStyle(color: Colors.red),
+                    style: TextStyle(color: Theme.of(context).colorScheme.error),
                   ),
                 ),
               ],

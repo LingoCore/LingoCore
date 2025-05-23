@@ -47,20 +47,15 @@ class _CourseScreenState extends State<CourseScreen> {
                     padding: EdgeInsets.all(16.0),
                     decoration: BoxDecoration( // to customize the container
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(width: 4, color: Colors.black26), // frame
-                      gradient: LinearGradient(  // provides a color transition appearance.
-                        colors: [Colors.blue, Colors.white], 
-                        begin: Alignment.topLeft, 
-                        end: Alignment.bottomRight,
-                        ),
-                  
+                      border: Border.all(width: 4, color: Theme.of(context).colorScheme.primary), // frame
+                      color: Theme.of(context).colorScheme.surface, // background color
                       // to shade
                       boxShadow: [ 
                         BoxShadow(
-                        color: Colors.grey.shade500,
-                        blurRadius: 8, // to highlight the color (blur value)
-                        spreadRadius: 2, // to spread the color more (spread value)
-                        offset: Offset(0,3), // gives an effect as if the sun hit from above.
+                        color: Theme.of(context).colorScheme.secondary,
+                        blurRadius: 4, // to highlight the color (blur value)
+                        spreadRadius: 1, // to spread the color more (spread value)
+                        offset: Offset(0,0), // gives an effect as if the sun hit from above.
                         ),
                       ] 
                     ),
@@ -71,12 +66,12 @@ class _CourseScreenState extends State<CourseScreen> {
                         child: Container(
                           width: 40.0, // A value close to the default diameter of the CircleAvatar (radius=20)
                           height: 40.0, // Width and height must be the same to make it a circle
-                          color: Colors.blueAccent, 
+                          color: Theme.of(context).colorScheme.primary, 
                           alignment: Alignment.center, 
                           child: Text(
                             '${index + 1}',
                             style: TextStyle(
-                              color: Colors.white, 
+                              color: Theme.of(context).colorScheme.surface, 
                             ),
                           ),
                         ),
