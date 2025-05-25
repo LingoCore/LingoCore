@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lingocore/lesson_pages.dart';
+import 'package:lingocore/screens/lesson.dart';
 import 'common_question_button.dart';
 
 class TrueFalseQuestion extends StatelessWidget {

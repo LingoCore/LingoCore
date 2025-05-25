@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lingocore/dialogs/loginflow.dart';
-import 'package:lingocore/theme.dart';
+import 'package:lingocore/services/theme.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});

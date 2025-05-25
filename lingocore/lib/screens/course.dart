@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lingocore/lesson_pages.dart';
+import 'package:lingocore/screens/lesson.dart';
 
 class CourseScreen extends StatefulWidget {
   const CourseScreen({super.key});

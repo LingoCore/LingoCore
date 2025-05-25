@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lingocore/theme.dart';
+import 'package:lingocore/services/theme.dart';
 import 'package:lingocore/widgets/questions.dart';
 import 'package:lingocore/widgets/common_question_button.dart';
 

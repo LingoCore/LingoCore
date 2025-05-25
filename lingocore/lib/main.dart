@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:lingocore/globals.dart';
-import 'package:lingocore/home_page.dart';
-import 'package:lingocore/lesson_pages.dart';
-import 'package:lingocore/login_page.dart';
-import 'package:lingocore/theme.dart';
+import 'package:lingocore/services/globals.dart';
+import 'package:lingocore/screens/home.dart';
+import 'package:lingocore/screens/lesson.dart';
+import 'package:lingocore/screens/login.dart';
+import 'package:lingocore/services/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

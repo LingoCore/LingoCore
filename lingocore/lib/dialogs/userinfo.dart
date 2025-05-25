@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lingocore/globals.dart';
+import 'package:lingocore/services/globals.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
 
