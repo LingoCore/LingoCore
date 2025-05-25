@@ -46,7 +46,8 @@ class MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
 
     // Function to determine the button color based on the answer
     Color getButtonColor(String option) {
-      if (!widget.answerList.contains(option)) return Theme.of(context).colorScheme.primary;
+      if (!widget.answerList.contains(option))
+        return Theme.of(context).colorScheme.primary;
 
       if (!widget.isPressAllowed) {
         final index = widget.answerList.indexOf(option);
@@ -78,7 +79,10 @@ class MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 3),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  width: 3,
+                ),
               ),
               height: screenHeight * 0.1,
               width: screenWidth * 0.8,
@@ -110,7 +114,8 @@ class MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
                             text: option,
                             onPressed: () => widget.callback(option),
                             backgroundColor: getButtonColor(option),
-                            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onPrimary,
                             isEnabled: widget.isPressAllowed,
                           ),
                         );

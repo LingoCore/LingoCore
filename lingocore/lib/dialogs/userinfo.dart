@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:lingocore/services/globals.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
-
 class UserInfoDialog extends StatelessWidget {
   const UserInfoDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
     if (loggedInUser == null) {
-      return Dialog(
-        child: ErrorWidget("Kullanıcı bilgileri yüklenemedi."),
-      );
+      return Dialog(child: ErrorWidget("Kullanıcı bilgileri yüklenemedi."));
     }
     return Dialog(
       child: ConstrainedBox(
@@ -65,7 +62,9 @@ class UserInfoDialog extends StatelessWidget {
                   },
                   child: Text(
                     "Çıkış Yap",
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                 ),
               ],

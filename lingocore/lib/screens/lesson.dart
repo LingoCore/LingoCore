@@ -107,7 +107,6 @@ class _LessonPagesState extends State<LessonPages> {
                   score: score,
                   totalQ: totalQuestions,
                   currentQ: currentQuestion,
-                  
                 ),
           ),
         );
@@ -146,10 +145,13 @@ class _LessonPagesState extends State<LessonPages> {
                     borderRadius: BorderRadius.circular(10),
                     child: LinearProgressIndicator(
                       value: value,
-                      backgroundColor:
-                        getFlavour(context).surface1,
-                      color:  Color.lerp(getFlavour(context).blue, getFlavour(context).green, (currentQuestion - 1) / totalQuestions),
-                        // Theme.of(context).colorScheme.secondary,
+                      backgroundColor: getFlavour(context).surface1,
+                      color: Color.lerp(
+                        getFlavour(context).blue,
+                        getFlavour(context).green,
+                        (currentQuestion - 1) / totalQuestions,
+                      ),
+                      // Theme.of(context).colorScheme.secondary,
                       minHeight: 15,
                     ),
                   );
@@ -170,9 +172,7 @@ class _LessonPagesState extends State<LessonPages> {
                     text: isQuestionAnswered ? "devam et" : "cevapla",
                     onPressed: () => toggleContinueButton(),
                     backgroundColor:
-                        isQuestionAnswered
-                            ? Colors.green
-                            : Colors.green,
+                        isQuestionAnswered ? Colors.green : Colors.green,
                   ),
                 ),
               ),
@@ -196,7 +196,6 @@ class LessonEnd extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
@@ -205,12 +204,18 @@ class LessonEnd extends StatelessWidget {
           children: [
             Text(
               "Test bitti!",
-              style: TextStyle(fontSize: 30, color: Theme.of(context).colorScheme.onSurface),
+              style: TextStyle(
+                fontSize: 30,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
 
             Text(
               "$score / $totalQ",
-              style: TextStyle(fontSize: 30, color: Theme.of(context).colorScheme.onSurface),
+              style: TextStyle(
+                fontSize: 30,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
 
             CommonButton(

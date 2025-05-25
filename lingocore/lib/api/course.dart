@@ -4,16 +4,16 @@ import 'package:uuid/uuid.dart';
 class UserCourse {
   /// Unique identifier for this user-course relation
   final String id;
-  
+
   /// The user identifier
   final String userId;
-  
+
   /// The course identifier
   final String courseId;
-  
+
   /// The current lesson the user is on
   final String currentLessonId;
-  
+
   final Course? course;
 
   UserCourse({
@@ -67,13 +67,13 @@ class UserCourse {
 class Course {
   /// Unique identifier for the course
   final String id;
-  
+
   /// Display name of the course
   final String displayName;
-  
+
   /// Native language of the user (what they already know)
   final String nativeLanguage;
-  
+
   /// Target language the user wants to learn
   final String targetLanguage;
 
@@ -82,8 +82,7 @@ class Course {
     required this.displayName,
     required this.nativeLanguage,
     required this.targetLanguage,
-  }) :
-    id = id ?? const Uuid().v4();
+  }) : id = id ?? const Uuid().v4();
 
   /// Create a Course from a JSON map
   factory Course.fromJson(Map<String, dynamic> json) {

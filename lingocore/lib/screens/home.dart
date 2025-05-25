@@ -38,9 +38,10 @@ class _HomePage extends State<HomePage> {
       body: PageView(
         controller: pageController,
         scrollDirection: Axis.horizontal,
-        onPageChanged: (value) => setState(() {
-          currentPage = value;
-        }),
+        onPageChanged:
+            (value) => setState(() {
+              currentPage = value;
+            }),
         children: [
           AiChatScreen(),
           CourseScreen(),
