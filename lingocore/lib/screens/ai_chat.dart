@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lingocore/theme.dart';
+import 'package:lingocore/services/theme.dart';
 
 class AiChatScreen extends StatefulWidget {
   const AiChatScreen({super.key});

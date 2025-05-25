@@ -1,6 +1,6 @@
 import 'package:lingocore/api/auth.dart';
 import 'package:lingocore/api/user.dart';
-import 'package:lingocore/globals.dart';
+import 'package:lingocore/services/globals.dart';
 
 Future<void> handleLogin(String username) async {
   try {

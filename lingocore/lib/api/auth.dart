@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:lingocore/api/api.dart';
 
 enum TokenType { access, refresh }
+
 String tokenTypeToString(TokenType type) {
   switch (type) {
     case TokenType.access:

@@ -13,10 +13,7 @@ Future checkSavedGlobals() async {
   final accessToken = prefs.getString("accesstoken");
   final refreshToken = prefs.getString("refreshtoken");
   if (accessToken != null && refreshToken != null) {
-    tokens = Tokens(
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-    );
+    tokens = Tokens(accessToken: accessToken, refreshToken: refreshToken);
   }
 
   final userJson = prefs.getString("userjson");

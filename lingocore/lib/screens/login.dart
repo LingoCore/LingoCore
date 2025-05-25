@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lingocore/dialogs/loginflow.dart';
-import 'package:lingocore/theme.dart';
+import 'package:lingocore/services/theme.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -25,7 +25,10 @@ class LoginPage extends StatelessWidget {
                 Image.asset('assets/images/LingoCoreLogo.png', height: 100),
                 Text(
                   "Giriş Ekranı",
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 20),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 20,
+                  ),
                 ),
               ],
             ),
@@ -59,7 +62,10 @@ class LoginPage extends StatelessWidget {
                       SizedBox(width: 10),
                       Text(
                         "Google ile giriş yap",
-                        style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ],
                   ),
@@ -76,7 +82,10 @@ class LoginPage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
                         "© LingoCore - 2025",
-                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                     blackDivider(),
@@ -84,7 +93,10 @@ class LoginPage extends StatelessWidget {
                 ),
                 Text(
                   "Tüm Hakları Saklıdır.",
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 16,
+                  ),
                 ),
               ],
             ),
