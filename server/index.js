@@ -11,6 +11,7 @@ import { courseEnroll, courseLeave, courseListAll } from "./routes/course.js";
 import { userInfo } from "./routes/user.js";
 import { authTestlogin, authTokeninfo } from "./routes/auth.js";
 import { sessionStart, sessionGet, sessionPost, sessionFinish } from "./routes/session.js";
+import { chatHandler } from "./routes/chat.js";
 import { QuestionModel } from "./models/question.js";
 
 export const app = express();
@@ -48,6 +49,9 @@ app.get("/api/session/:sessionId", authenticate, sessionGet);
 app.post("/api/session/:sessionId", authenticate, sessionPost);
 
 app.post("/api/session/finish/:sessionId", authenticate, sessionFinish);
+
+/* api/chat */
+app.post("/api/chat", authenticate, chatHandler);
 
 setupRelations();
 sequelize
