@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lingocore/api/chat.dart';
+import 'package:lingocore/services/globals.dart';
 import 'package:lingocore/services/theme.dart';
 
 class AiChatScreen extends StatefulWidget {
@@ -30,41 +32,22 @@ class _AiChatScreenState extends State<AiChatScreen> {
     super.dispose();
   }
 
-  void _sendMessage() {
+  Future<void> _sendMessage() async {
     if (_messageController.text.trim().isEmpty) return;
+
+    final userMessage = _messageController.text;
+    final currentTime = '${DateTime.now().hour.toString().padLeft(2, "0")}:${DateTime.now().minute.toString().padLeft(2, "0")}';
 
     setState(() {
       // Add user question
       messages.add({
-        'text': _messageController.text,
+        'text': userMessage,
         'type': 'question',
-        'time':
-            '${DateTime.now().hour.toString().padLeft(2, "0")}'
-            ':'
-            '${DateTime.now().minute.toString().padLeft(2, "0")}',
+        'time': currentTime,
       });
 
       // Clear input field
       _messageController.clear();
-
-      // Simulate AI response after a short delay
-      Future.delayed(const Duration(seconds: 1), () {
-        setState(() {
-          messages.add({
-            'text':
-                'Bu bir simüle edilmiş cevaptır. API bağlantısı kurulduğunda gerçek cevaplar alacaksınız.',
-            'type': 'answer',
-            'time': '${DateTime.now().hour}:${DateTime.now().minute}',
-          });
-        });
-
-        // Scroll to bottom
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      });
     });
 
     // Scroll to bottom
@@ -75,6 +58,43 @@ class _AiChatScreenState extends State<AiChatScreen> {
         curve: Curves.easeOut,
       );
     });
+
+    try {
+      if (tokens?.accessToken == null) {
+        throw Exception("Not authenticated");
+      }
+
+      final responseText = await sendChatMessage(userMessage, tokens!.accessToken);
+
+      if (!mounted) return;
+
+      setState(() {
+        messages.add({
+          'text': responseText,
+          'type': 'answer',
+          'time': '${DateTime.now().hour.toString().padLeft(2, "0")}:${DateTime.now().minute.toString().padLeft(2, "0")}',
+        });
+      });
+
+      // Scroll to bottom
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      });
+
+    } catch (e) {
+       if (!mounted) return;
+       setState(() {
+          messages.add({
+            'text': 'Error: Could not get response from AI. $e',
+            'type': 'answer',
+            'time': '${DateTime.now().hour}:${DateTime.now().minute}',
+          });
+        });
+    }
   }
 
   @override
